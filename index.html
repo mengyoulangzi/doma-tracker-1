@@ -1,0 +1,459 @@
+import React, { useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
+import {
+  Search,
+  Wallet,
+  Globe,
+  ShieldCheck,
+  ArrowUpRight,
+  ArrowDownRight,
+  Activity,
+  Coins,
+  Database,
+  User,
+  Sparkles,
+  BarChart3,
+  CheckCircle2,
+  BadgeDollarSign,
+} from 'lucide-react';
+import {
+  AreaChart,
+  Area,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
+
+const chartData = [
+  { day: 'Mon', volume: 12000 },
+  { day: 'Tue', volume: 19000 },
+  { day: 'Wed', volume: 24000 },
+  { day: 'Thu', volume: 21000 },
+  { day: 'Fri', volume: 28000 },
+  { day: 'Sat', volume: 34000 },
+  { day: 'Sun', volume: 42000 },
+];
+
+const tokenData = [
+  { name: 'AI Domains', value: 45 },
+  { name: '.XYZ', value: 25 },
+  { name: '.COM', value: 20 },
+  { name: 'Meme Domains', value: 10 },
+];
+
+const domains = [
+  {
+    name: 'continents.ai',
+    type: 'AI Premium',
+    value: '$42,000',
+    status: 'Tokenized',
+  },
+  {
+    name: 'miaweb3.xyz',
+    type: 'Brandable',
+    value: '$8,400',
+    status: 'Staked',
+  },
+  {
+    name: 'domainfi.art',
+    type: 'NFT Domain',
+    value: '$13,700',
+    status: 'Trading',
+  },
+  {
+    name: 'memecapital.ai',
+    type: 'Meme AI',
+    value: '$24,900',
+    status: 'Fractionalized',
+  },
+];
+
+const trades = [
+  {
+    action: 'BUY',
+    domain: 'software.ai',
+    amount: '$2,450',
+    date: '19 Mar 2026',
+  },
+  {
+    action: 'SELL',
+    domain: 'brag.com',
+    amount: '$5,870',
+    date: '18 Mar 2026',
+  },
+  {
+    action: 'BUY',
+    domain: 'investors.xyz',
+    amount: '$920',
+    date: '18 Mar 2026',
+  },
+  {
+    action: 'BUY',
+    domain: 'boner.com',
+    amount: '$1,320',
+    date: '17 Mar 2026',
+  },
+];
+
+const COLORS = ['#4b76f9', '#77a2ff', '#95b7ff', '#bdd1ff'];
+
+export default function DomaWalletProfileDashboard() {
+  const [wallet, setWallet] = useState(
+    '0xe23153b21Cb41fFbc2cD08e2d0017a2B3Bc6c8c5'
+  );
+
+  const shortWallet = useMemo(() => {
+    return wallet.slice(0, 6) + '...' + wallet.slice(-4);
+  }, [wallet]);
+
+  return (
+    <div className="min-h-screen bg-white text-slate-900 overflow-hidden relative">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#4b76f922,transparent_60%)]" />
+
+      <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
+        <img
+          src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmQ0d3Q2d2Y0cDBvMXF5dGNjZmZsN2x1aW83dDhjYTRjY2l3b2F6YyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3o7aD2saalBwwftBIY/giphy.gif"
+          alt="bg"
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      <header className="relative z-10 border-b border-blue-100 bg-white/70 backdrop-blur-xl sticky top-0">
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-[#4b76f9] flex items-center justify-center shadow-xl">
+              <Globe className="text-white" />
+            </div>
+
+            <div>
+              <h1 className="text-2xl font-black tracking-tight text-[#4b76f9]">
+                DOMA Identity Dashboard
+              </h1>
+              <p className="text-sm text-slate-500">
+                Track domains, tokenized assets, trades & onchain identity
+              </p>
+            </div>
+          </div>
+
+          <div className="hidden md:flex items-center gap-3 bg-blue-50 rounded-2xl px-4 py-2 border border-blue-100">
+            <Sparkles className="w-4 h-4 text-[#4b76f9]" />
+            <span className="font-medium text-sm">Powered by DomainFi</span>
+          </div>
+        </div>
+      </header>
+
+      <main className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid lg:grid-cols-3 gap-6"
+        >
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-3xl border border-blue-100 shadow-2xl p-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h2 className="text-3xl font-black mb-2 text-slate-900">
+                    Wallet Intelligence
+                  </h2>
+                  <p className="text-slate-500">
+                    Analyze domains, token activity, identity score and Doma ecosystem engagement.
+                  </p>
+                </div>
+
+                <div className="flex gap-2 items-center bg-slate-50 border border-slate-200 rounded-2xl p-2 w-full md:w-[420px]">
+                  <Search className="text-slate-400 ml-2" />
+                  <input
+                    value={wallet}
+                    onChange={(e) => setWallet(e.target.value)}
+                    className="bg-transparent outline-none w-full text-sm"
+                    placeholder="Enter wallet address"
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-4 gap-4 mt-6">
+                {[
+                  {
+                    title: 'Domains Held',
+                    value: '24',
+                    icon: Globe,
+                  },
+                  {
+                    title: 'Portfolio Value',
+                    value: '$148K',
+                    icon: BadgeDollarSign,
+                  },
+                  {
+                    title: 'Transactions',
+                    value: '1,248',
+                    icon: Activity,
+                  },
+                  {
+                    title: 'Tokenized Assets',
+                    value: '12',
+                    icon: Coins,
+                  },
+                ].map((item, i) => (
+                  <motion.div
+                    whileHover={{ scale: 1.03 }}
+                    key={i}
+                    className="bg-gradient-to-br from-[#4b76f9] to-blue-400 rounded-3xl p-5 text-white shadow-xl"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <item.icon className="w-6 h-6" />
+                      <ArrowUpRight className="w-5 h-5 opacity-80" />
+                    </div>
+                    <div className="text-3xl font-black">{item.value}</div>
+                    <div className="text-sm opacity-90 mt-1">{item.title}</div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-6">
+              <div className="bg-white rounded-3xl border border-blue-100 p-6 shadow-xl">
+                <div className="flex items-center gap-2 mb-5">
+                  <BarChart3 className="text-[#4b76f9]" />
+                  <h3 className="font-black text-xl">Trading Volume</h3>
+                </div>
+
+                <div className="h-[280px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData}>
+                      <defs>
+                        <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#4b76f9" stopOpacity={0.8} />
+                          <stop offset="95%" stopColor="#4b76f9" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="day" />
+                      <YAxis />
+                      <Tooltip />
+                      <Area
+                        type="monotone"
+                        dataKey="volume"
+                        stroke="#4b76f9"
+                        fillOpacity={1}
+                        fill="url(#colorVolume)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-3xl border border-blue-100 p-6 shadow-xl">
+                <div className="flex items-center gap-2 mb-5">
+                  <Database className="text-[#4b76f9]" />
+                  <h3 className="font-black text-xl">Asset Distribution</h3>
+                </div>
+
+                <div className="h-[280px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={tokenData}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={90}
+                        dataKey="value"
+                        label
+                      >
+                        {tokenData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl border border-blue-100 shadow-xl p-6">
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="font-black text-2xl">Domains Held</h3>
+                <span className="text-sm bg-blue-50 text-[#4b76f9] px-3 py-1 rounded-full font-semibold">
+                  Live Portfolio
+                </span>
+              </div>
+
+              <div className="overflow-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-left text-slate-500 border-b">
+                      <th className="pb-3">Domain</th>
+                      <th className="pb-3">Type</th>
+                      <th className="pb-3">Value</th>
+                      <th className="pb-3">Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {domains.map((domain, i) => (
+                      <tr key={i} className="border-b border-slate-100 hover:bg-blue-50 transition-all">
+                        <td className="py-4 font-bold text-[#4b76f9]">{domain.name}</td>
+                        <td>{domain.type}</td>
+                        <td>{domain.value}</td>
+                        <td>
+                          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">
+                            {domain.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl border border-blue-100 shadow-xl p-6">
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="font-black text-2xl">Buy / Sell History</h3>
+                <span className="text-sm bg-slate-100 px-3 py-1 rounded-full font-semibold">
+                  Last 7 Days
+                </span>
+              </div>
+
+              <div className="space-y-4">
+                {trades.map((trade, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between border border-slate-100 rounded-2xl p-4 hover:bg-blue-50 transition-all"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                          trade.action === 'BUY'
+                            ? 'bg-green-100 text-green-600'
+                            : 'bg-red-100 text-red-600'
+                        }`}
+                      >
+                        {trade.action === 'BUY' ? (
+                          <ArrowUpRight />
+                        ) : (
+                          <ArrowDownRight />
+                        )}
+                      </div>
+
+                      <div>
+                        <div className="font-black">{trade.domain}</div>
+                        <div className="text-sm text-slate-500">{trade.date}</div>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="font-black text-lg">{trade.amount}</div>
+                      <div className="text-sm text-slate-500">{trade.action}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="bg-gradient-to-br from-[#4b76f9] to-cyan-400 rounded-3xl p-6 text-white shadow-2xl overflow-hidden relative">
+              <div className="absolute right-0 bottom-0 opacity-20 text-[180px] font-black leading-none">
+                DOMA
+              </div>
+
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/50">
+                    <img
+                      src="https://i.imgur.com/8Km9tLL.png"
+                      alt="avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="text-2xl font-black">marginla</div>
+                    <div className="text-sm opacity-90">Web3 Content Creator</div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-sm leading-relaxed opacity-95">
+                  <p>
+                    Passionate about blockchain innovation, DomainFi, DeFi, AI narratives and onchain communities.
+                  </p>
+
+                  <div className="bg-white/20 rounded-2xl p-4 backdrop-blur-sm">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Wallet className="w-4 h-4" />
+                      <span className="font-semibold">Wallet</span>
+                    </div>
+                    <div className="break-all text-xs">{shortWallet}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl border border-blue-100 shadow-xl p-6">
+              <div className="flex items-center gap-2 mb-5">
+                <ShieldCheck className="text-[#4b76f9]" />
+                <h3 className="font-black text-2xl">Identity Verification</h3>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  'Doma OG Candidate',
+                  'Onchain Wallet Verified',
+                  'DomainFi Researcher',
+                  'Social Profiles Connected',
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-2xl p-4"
+                  >
+                    <CheckCircle2 className="text-[#4b76f9] w-5 h-5" />
+                    <span className="font-medium">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-3xl border border-blue-100 shadow-xl p-6">
+              <div className="flex items-center gap-2 mb-5">
+                <User className="text-[#4b76f9]" />
+                <h3 className="font-black text-2xl">About</h3>
+              </div>
+
+              <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
+                <p>
+                  Hello, I am marginla, a Web3 enthusiast and crypto content creator with a strong passion for blockchain innovation, digital culture, and emerging technologies.
+                </p>
+
+                <p>
+                  Experienced across DeFi, NFTs, AI projects, onchain communities and DomainFi growth strategies.
+                </p>
+
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div className="bg-slate-50 rounded-2xl p-3 border">
+                    <div className="text-xs text-slate-400">Region</div>
+                    <div className="font-bold">APAC</div>
+                  </div>
+
+                  <div className="bg-slate-50 rounded-2xl p-3 border">
+                    <div className="text-xs text-slate-400">Languages</div>
+                    <div className="font-bold">TS / JS / C++</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </main>
+
+      <audio autoPlay loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6db4f0e4f2.mp3?filename=future-beat-117997.mp3" />
+      </audio>
+    </div>
+  );
+}
