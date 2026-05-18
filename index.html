@@ -1,1272 +1,367 @@
+# FULL `index.html` CHẠY TRỰC TIẾP TRÊN GITHUB PAGES
+
+Paste TOÀN BỘ code dưới đây vào file `index.html` của bạn.
+
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DOMA Identity Dashboard</title>
-  <meta name="description" content="Doma wallet and domain tracker dashboard." />
+  <title>Doma Dashboard</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      background: #ffffff;
-      color: #0f172a;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    .soft-grid {
-      background-image:
-        linear-gradient(to right, rgba(75,118,249,0.20) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(75,118,249,0.20) 1px, transparent 1px);
-      background-size: 62px 62px;
-    }
-
-    .no-scrollbar::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-    }
-
-    .shadow-blue {
-      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.06);
+      background: #f8fbff;
+      font-family: Arial, sans-serif;
     }
 
     .glass {
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(10px);
     }
   </style>
 </head>
-
 <body>
-  <div id="root"></div>
 
-  <script type="text/babel">
-    const { useEffect, useMemo, useRef, useState } = React;
+<div id="root"></div>
 
-    const DEMO_WALLET = "0xe23153b21Cb41fFbc2cD08e2d0017a2B3Bc6c8c5";
-    const PRIMARY = "#4b76f9";
+<script type="text/babel">
 
-    const DEFAULT_PROFILE = {
-      displayName: "marginla",
-      domaName: "marginla.xyz",
-      bio:
-        "Hello, I am marginla, a Web3 enthusiast and crypto content creator with a strong passion for blockchain innovation, digital culture, and emerging technologies. Over the past few years, I have actively explored the crypto ecosystem, with experience across DeFi, NFTs, AI related projects, onchain communities, and social growth within the Web3 space. I am deeply interested in market narratives, domain branding, community engagement, and the evolution of decentralized technologies.",
-      location: "Hanoi, Hanoi, Vietnam",
-      region: "APAC",
-      linkedin: "https://www.linkedin.com/in/escaping-night-3bba5348/?trkRedirect=true",
-      x: "https://x.com/angjzlhwang",
-      github: "https://github.com/mengyoulangzl",
-      company: "https://spacex.com/",
-      discord: "@marginla id(127455958356192010)",
-      sectors: ["Exchanges and Trading", "Wallets and Custody", "Identity"],
-      languages: ["TypeScript / JavaScript", "C++"],
-      interests: ["Market narratives", "Domain branding", "Community engagement", "Emerging tech"],
-      askedFor: {
-        betaTesting: true,
-        speaking: true,
-        technicalGuidance: "Technical guidance",
-        heardAboutArc: "Social Media"
-      },
-      stats: {
-        totalTokens: 229,
-        walletScore: 91,
-        holdings: 14,
-        domains: 7,
-        launches: 3,
-        buys: 18,
-        sells: 11,
-        value: "$48.2K",
-        txs: 1248
-      },
-      identity: {
-        verified: true,
-        role: "Doma OG Candidate",
-        level: "High signal"
-      }
-    };
+const { useState } = React;
 
-    const PROFILE_BY_WALLET = {
-      [DEMO_WALLET.toLowerCase()]: {
-        ...DEFAULT_PROFILE,
-        holdings: [
-          { asset: "marginla.xyz", type: "Domain", amount: "1", status: "Owned", value: "$8,400" },
-          { asset: "software.ai", type: "Domain", amount: "0.42 DOT", status: "Fractional", value: "$2,160" },
-          { asset: "brag.com", type: "Domain", amount: "0.15 DOT", status: "Fractional", value: "$1,130" },
-          { asset: "DOMA", type: "Token", amount: "229", status: "Watching", value: "$6,340" },
-          { asset: "AI narrative basket", type: "Token Basket", amount: "5", status: "Tracking", value: "$4,120" }
-        ],
-        trades: [
-          { time: "09:42", action: "Bought", item: "software.ai", size: "$1,120", note: "Early narrative entry" },
-          { time: "12:18", action: "Listed", item: "marginla.xyz", size: "$0", note: "Profile update" },
-          { time: "15:03", action: "Sold", item: "Token fragment", size: "$340", note: "Scaled out" },
-          { time: "18:27", action: "Staked", item: "Doma fraction", size: "$0", note: "Yield setup" }
-        ],
-        domains: [
-          { name: "marginla.xyz", category: "Identity", mode: "Profile", health: 96 },
-          { name: "software.ai", category: "AI", mode: "Fractional", health: 94 },
-          { name: "brag.com", category: "Brand", mode: "Fractional", health: 89 },
-          { name: "investors.xyz", category: "Finance", mode: "Tracking", health: 76 },
-          { name: "depin.ai", category: "Infra", mode: "Watching", health: 82 }
-        ],
-        timeline: [
-          { day: "Mon", volume: 12000 },
-          { day: "Tue", volume: 19000 },
-          { day: "Wed", volume: 24000 },
-          { day: "Thu", volume: 21000 },
-          { day: "Fri", volume: 28000 },
-          { day: "Sat", volume: 34000 },
-          { day: "Sun", volume: 42000 }
-        ],
-        tokenMix: [
-          { name: "AI Domains", value: 45 },
-          { name: ".XYZ", value: 25 },
-          { name: ".COM", value: 20 },
-          { name: "Meme Domains", value: 10 }
-        ]
-      },
-      ["0x" + "a"].toLowerCase(): {
-        ...DEFAULT_PROFILE,
-        displayName: "guest",
-        domaName: "guest.doma",
-        bio: "Guest profile. Replace this with API-connected wallet data.",
-        holdings: [],
-        trades: [],
-        domains: [],
-        timeline: [],
-        tokenMix: []
-      }
-    };
+function App() {
 
-    const COLORS = [PRIMARY, "#77a2ff", "#95b7ff", "#bdd1ff"];
+  const [wallet, setWallet] = useState(
+    "0xe23153b21Cb41fFbc2cD08e2d0017a2B3Bc6c8c5"
+  );
 
-    function cn() {
-      return Array.from(arguments).filter(Boolean).join(" ");
+  const stats = [
+    {
+      title: "Domains",
+      value: "7"
+    },
+    {
+      title: "Wallet Score",
+      value: "91/100"
+    },
+    {
+      title: "Portfolio",
+      value: "$48.2K"
+    },
+    {
+      title: "Transactions",
+      value: "1248"
     }
+  ];
 
-    function truncate(addr) {
-      if (!addr) return "";
-      return addr.slice(0, 6) + "..." + addr.slice(-4);
+  const domains = [
+    "marginla.xyz",
+    "software.ai",
+    "brag.com",
+    "investors.xyz"
+  ];
+
+  const trades = [
+    {
+      action: "Bought",
+      item: "software.ai",
+      value: "$1120"
+    },
+    {
+      action: "Sold",
+      item: "Token fragment",
+      value: "$340"
+    },
+    {
+      action: "Staked",
+      item: "DOMA",
+      value: "$0"
     }
+  ];
 
-    function useAmbientAudio(enabled) {
-      const ctxRef = useRef(null);
-      const gainRef = useRef(null);
+  return (
+    <div className="min-h-screen text-slate-900">
 
-      useEffect(() => {
-        const start = async () => {
-          if (!enabled) {
-            try {
-              if (ctxRef.current) await ctxRef.current.close();
-            } catch (e) {}
-            ctxRef.current = null;
-            gainRef.current = null;
-            return;
-          }
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-blue-100 via-white to-cyan-100"></div>
 
-          if (ctxRef.current) return;
+      <header className="sticky top-0 glass border-b border-blue-100">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-          const AudioCtx = window.AudioContext || window.webkitAudioContext;
-          if (!AudioCtx) return;
-
-          const ctx = new AudioCtx();
-          const gain = ctx.createGain();
-          gain.gain.value = 0.015;
-
-          const filter = ctx.createBiquadFilter();
-          filter.type = "lowpass";
-          filter.frequency.value = 520;
-
-          const osc1 = ctx.createOscillator();
-          osc1.type = "sine";
-          osc1.frequency.value = 196;
-
-          const osc2 = ctx.createOscillator();
-          osc2.type = "triangle";
-          osc2.frequency.value = 294;
-
-          osc1.connect(gain);
-          osc2.connect(gain);
-          gain.connect(filter);
-          filter.connect(ctx.destination);
-          osc1.start();
-          osc2.start();
-
-          ctxRef.current = ctx;
-          gainRef.current = gain;
-        };
-
-        start();
-
-        return () => {
-          try {
-            if (ctxRef.current) ctxRef.current.close();
-          } catch (e) {}
-          ctxRef.current = null;
-          gainRef.current = null;
-        };
-      }, [enabled]);
-    }
-
-    function IconBase({ children, size = 20, className = "" }) {
-      return (
-        <svg
-          width={size}
-          height={size}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={className}
-          aria-hidden="true"
-        >
-          {children}
-        </svg>
-      );
-    }
-
-    function Activity(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M3 12h4l3-7 4 14 3-7h4" />
-        </IconBase>
-      );
-    }
-
-    function BadgeCheck(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M9 12l2 2 4-4" />
-          <path d="M12 2l2.5 1.5 2.9-.2 1.8 2.2 2.2 1.8-.2 2.9L22 12l-.8 2.8.2 2.9-2.2 1.8-1.8 2.2-2.9-.2L12 22l-2.5-1.5-2.9.2-1.8-2.2-2.2-1.8.2-2.9L2 12l.8-2.8-.2-2.9 2.2-1.8 1.8-2.2 2.9.2Z" />
-        </IconBase>
-      );
-    }
-
-    function BarChart3(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M4 20V10" />
-          <path d="M10 20V4" />
-          <path d="M16 20v-7" />
-          <path d="M22 20H2" />
-        </IconBase>
-      );
-    }
-
-    function Bell(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M15 17H5l1.5-2V10a5.5 5.5 0 0 1 11 0v5l1.5 2H17" />
-          <path d="M10 20a2 2 0 0 0 4 0" />
-        </IconBase>
-      );
-    }
-
-    function BookOpen(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M12 5v15" />
-          <path d="M12 5C10 4 8 4 5 5v15c3-1 5-1 7 0" />
-          <path d="M12 5c2-1 4-1 7 0v15c-3-1-5-1-7 0" />
-        </IconBase>
-      );
-    }
-
-    function CheckCircle2(props) {
-      return (
-        <IconBase {...props}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M9 12l2 2 4-4" />
-        </IconBase>
-      );
-    }
-
-    function Coins(props) {
-      return (
-        <IconBase {...props}>
-          <ellipse cx="8" cy="8" rx="4" ry="2.5" />
-          <path d="M4 8v4c0 1.4 1.8 2.5 4 2.5s4-1.1 4-2.5V8" />
-          <ellipse cx="16" cy="12" rx="4" ry="2.5" />
-          <path d="M12 12v4c0 1.4 1.8 2.5 4 2.5s4-1.1 4-2.5v-4" />
-        </IconBase>
-      );
-    }
-
-    function Copy(props) {
-      return (
-        <IconBase {...props}>
-          <rect x="9" y="9" width="10" height="10" rx="2" />
-          <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" />
-        </IconBase>
-      );
-    }
-
-    function Database(props) {
-      return (
-        <IconBase {...props}>
-          <ellipse cx="12" cy="5" rx="7" ry="3" />
-          <path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5" />
-          <path d="M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6" />
-        </IconBase>
-      );
-    }
-
-    function ExternalLink(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M14 3h7v7" />
-          <path d="M10 14L21 3" />
-          <path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
-        </IconBase>
-      );
-    }
-
-    function Globe(props) {
-      return (
-        <IconBase {...props}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M3 12h18" />
-          <path d="M12 3a15 15 0 0 1 0 18" />
-          <path d="M12 3a15 15 0 0 0 0 18" />
-        </IconBase>
-      );
-    }
-
-    function Grid2X2(props) {
-      return (
-        <IconBase {...props}>
-          <rect x="4" y="4" width="7" height="7" rx="1.5" />
-          <rect x="13" y="4" width="7" height="7" rx="1.5" />
-          <rect x="4" y="13" width="7" height="7" rx="1.5" />
-          <rect x="13" y="13" width="7" height="7" rx="1.5" />
-        </IconBase>
-      );
-    }
-
-    function Headphones(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M4 12a8 8 0 0 1 16 0" />
-          <path d="M4 12v5a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2-1Z" />
-          <path d="M20 12v5a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2-1Z" />
-        </IconBase>
-      );
-    }
-
-    function LayoutDashboard(props) {
-      return (
-        <IconBase {...props}>
-          <rect x="3" y="3" width="8" height="8" rx="2" />
-          <rect x="13" y="3" width="8" height="5" rx="2" />
-          <rect x="13" y="10" width="8" height="11" rx="2" />
-          <rect x="3" y="13" width="8" height="8" rx="2" />
-        </IconBase>
-      );
-    }
-
-    function MapPin(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M12 21s6-5 6-11a6 6 0 0 0-12 0c0 6 6 11 6 11Z" />
-          <circle cx="12" cy="10" r="2.5" />
-        </IconBase>
-      );
-    }
-
-    function Pause(props) {
-      return (
-        <IconBase {...props}>
-          <rect x="6" y="5" width="4" height="14" rx="1" />
-          <rect x="14" y="5" width="4" height="14" rx="1" />
-        </IconBase>
-      );
-    }
-
-    function Play(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M8 5v14l11-7-11-7Z" />
-        </IconBase>
-      );
-    }
-
-    function RefreshCcw(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M3 12a9 9 0 0 1 15-6.7L21 7" />
-          <path d="M21 3v4h-4" />
-          <path d="M21 12a9 9 0 0 1-15 6.7L3 17" />
-          <path d="M3 21v-4h4" />
-        </IconBase>
-      );
-    }
-
-    function Search(props) {
-      return (
-        <IconBase {...props}>
-          <circle cx="11" cy="11" r="7" />
-          <path d="M21 21l-4.3-4.3" />
-        </IconBase>
-      );
-    }
-
-    function ShieldCheck(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M12 22s7-3.5 7-10V5l-7-3-7 3v7c0 6.5 7 10 7 10Z" />
-          <path d="M9.5 12.5l1.8 1.8 3.7-3.7" />
-        </IconBase>
-      );
-    }
-
-    function Sparkles(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2Z" />
-          <path d="M19 13l.8 2.2L22 16l-2.2.8L19 19l-.8-2.2L16 16l2.2-.8L19 13Z" />
-          <path d="M5 14l.8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8L5 14Z" />
-        </IconBase>
-      );
-    }
-
-    function TerminalSquare(props) {
-      return (
-        <IconBase {...props}>
-          <rect x="3" y="3" width="18" height="18" rx="3" />
-          <path d="M7 8l3 3-3 3" />
-          <path d="M13 14h4" />
-        </IconBase>
-      );
-    }
-
-    function Wallet(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M4 7a2 2 0 0 1 2-2h11a3 3 0 0 1 3 3v1H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h15V10" />
-          <circle cx="17" cy="13" r="1" />
-        </IconBase>
-      );
-    }
-
-    function X(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M6 6l12 12" />
-          <path d="M18 6L6 18" />
-        </IconBase>
-      );
-    }
-
-    function ArrowUpRight(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M7 17L17 7" />
-          <path d="M9 7h8v8" />
-        </IconBase>
-      );
-    }
-
-    function ArrowDownRight(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M7 7l10 10" />
-          <path d="M9 17h8V9" />
-        </IconBase>
-      );
-    }
-
-    function BadgeDollarSign(props) {
-      return (
-        <IconBase {...props}>
-          <path d="M12 2l2.3 1.4 2.7-.2 1.6 2.1 2.1 1.6-.2 2.7L22 12l-1.5 2.4.2 2.7-2.1 1.6-1.6 2.1-2.7-.2L12 22l-2.3-1.4-2.7.2-1.6-2.1-2.1-1.6.2-2.7L2 12l1.5-2.4-.2-2.7 2.1-1.6 1.6-2.1 2.7.2L12 2Z" />
-          <path d="M12 7v10" />
-          <path d="M15 9.5c0-1.2-1.2-2-3-2s-3 .8-3 2 1 1.8 3 2 3 .8 3 2-1.2 2-3 2-3-.8-3-2" />
-        </IconBase>
-      );
-    }
-
-    function User(props) {
-      return (
-        <IconBase {...props}>
-          <circle cx="12" cy="8" r="4" />
-          <path d="M4 21a8 8 0 0 1 16 0" />
-        </IconBase>
-      );
-    }
-
-    function Users(props) {
-      return (
-        <IconBase {...props}>
-          <circle cx="9" cy="8" r="4" />
-          <path d="M2 21a7 7 0 0 1 14 0" />
-          <circle cx="17" cy="9" r="3" />
-          <path d="M14 21a6 6 0 0 1 9 0" />
-        </IconBase>
-      );
-    }
-
-    function SectionTitle({ title, subtitle, right }) {
-      return (
-        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">{subtitle || ""}</p>
-            <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-900">{title}</h2>
-          </div>
-          {right}
-        </div>
-      );
-    }
+            <h1 className="text-3xl font-black text-blue-600">
+              DOMA Identity Dashboard
+            </h1>
 
-    function Pill({ children, className }) {
-      return (
-        <span
-          className={cn(
-            "inline-flex items-center rounded-full border border-[#4b76f9]/20 bg-[#4b76f9]/8 px-3 py-1 text-xs font-semibold text-[#3f63d8]",
-            className
-          )}
-        >
-          {children}
-        </span>
-      );
-    }
-
-    function Card({ children, className }) {
-      return (
-        <div className={cn("rounded-[30px] border border-slate-200 bg-white shadow-blue", className)}>
-          {children}
-        </div>
-      );
-    }
-
-    function StatCard({ icon: Icon, label, value, delta }) {
-      return (
-        <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-              <p className="mt-2 text-2xl font-black tracking-tight text-slate-900">{value}</p>
-              {delta ? <p className="mt-1 text-sm font-semibold text-emerald-600">{delta}</p> : null}
-            </div>
-            <div className="rounded-2xl bg-[#4b76f9]/10 p-3 text-[#4b76f9]">
-              <Icon size={20} />
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    function EmptyState({ title, text }) {
-      return (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#4b76f9]/10 text-[#4b76f9]">
-            <X size={18} />
-          </div>
-          <p className="font-bold text-slate-900">{title}</p>
-          <p className="mt-1 text-sm leading-6 text-slate-600">{text}</p>
-        </div>
-      );
-    }
-
-    function DomainRow({ name, category, mode, health }) {
-      return (
-        <div className="grid grid-cols-[1.4fr_0.8fr_0.7fr_1fr] items-center gap-4 border-b border-slate-100 py-4 last:border-b-0">
-          <div>
-            <p className="font-mono text-[15px] font-bold text-slate-900">{name}</p>
-            <p className="mt-1 text-xs font-medium uppercase tracking-[0.16em] text-slate-500">{category}</p>
-          </div>
-          <div>
-            <Pill className="bg-slate-50 text-slate-700">{mode}</Pill>
-          </div>
-          <div className="font-bold text-slate-900">{health}%</div>
-          <div>
-            <div className="h-2 rounded-full bg-slate-100">
-              <div className="h-2 rounded-full bg-[#4b76f9]" style={{ width: `${health}%` }} />
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    function TradeRow({ time, action, item, size, note }) {
-      const isBuy = action === "Bought" || action === "Staked";
-      return (
-        <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-4 transition hover:border-[#4b76f9]/30 hover:bg-[#4b76f9]/4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <div className={cn(
-              "flex h-12 w-12 items-center justify-center rounded-2xl",
-              isBuy ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"
-            )}>
-              {isBuy ? <ArrowUpRight size={18} /> : <ArrowDownRight size={18} />}
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">{time}</p>
-              <p className="mt-1 text-[15px] font-bold text-slate-900">
-                {action} <span className="text-[#3f63d8]">{item}</span>
-              </p>
-              <p className="mt-1 text-sm text-slate-600">{note}</p>
-            </div>
-          </div>
-          <div className="text-left sm:text-right">
-            <div className="text-lg font-black text-slate-900">{size}</div>
-            <div className={cn(
-              "mt-1 text-xs font-bold uppercase tracking-[0.16em]",
-              isBuy ? "text-emerald-600" : "text-rose-600"
-            )}>
-              {action}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    function HoldingRow({ asset, type, amount, status, value }) {
-      return (
-        <div className="grid grid-cols-1 gap-3 rounded-3xl border border-slate-200 bg-white p-4 sm:grid-cols-[1.2fr_0.8fr_0.8fr_0.6fr] sm:items-center">
-          <div>
-            <p className="font-bold text-slate-900">{asset}</p>
-            <p className="mt-1 text-xs font-medium uppercase tracking-[0.16em] text-slate-500">{type}</p>
-          </div>
-          <div className="text-sm font-semibold text-slate-700">{amount}</div>
-          <div className="text-sm font-semibold text-slate-700">{value}</div>
-          <div>
-            <Pill className="bg-emerald-50 text-emerald-700">{status}</Pill>
-          </div>
-        </div>
-      );
-    }
-
-    function DetailCard({ title, text, icon: Icon }) {
-      return (
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-          <div className="flex items-center gap-2">
-            {Icon ? <Icon size={16} className="text-[#4b76f9]" /> : null}
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">{title}</p>
-          </div>
-          <p className="mt-2 text-sm leading-6 text-slate-700">{text}</p>
-        </div>
-      );
-    }
-
-    function LinkChip({ href, label }) {
-      return (
-        <a
-          href={href}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#4b76f9]/30 hover:text-[#3f63d8]"
-        >
-          <span>{label}</span>
-          <ExternalLink size={14} />
-        </a>
-      );
-    }
-
-    function slicePath(cx, cy, r, startAngle, endAngle) {
-      const toRad = (a) => (Math.PI / 180) * a;
-      const start = {
-        x: cx + r * Math.cos(toRad(startAngle)),
-        y: cy + r * Math.sin(toRad(startAngle))
-      };
-      const end = {
-        x: cx + r * Math.cos(toRad(endAngle)),
-        y: cy + r * Math.sin(toRad(endAngle))
-      };
-      const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
-      return `M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 1 ${end.x} ${end.y} Z`;
-    }
-
-    function AreaChartSvg({ data }) {
-      const width = 1000;
-      const height = 320;
-      const padLeft = 52;
-      const padRight = 24;
-      const padTop = 24;
-      const padBottom = 38;
-
-      const values = data.map((d) => d.volume);
-      const max = Math.max.apply(null, values.concat([1]));
-      const min = 0;
-
-      const usableW = width - padLeft - padRight;
-      const usableH = height - padTop - padBottom;
-
-      const x = (i) => padLeft + (data.length === 1 ? usableW / 2 : (i * usableW) / (data.length - 1));
-      const y = (v) => padTop + (1 - (v - min) / (max - min || 1)) * usableH;
-
-      const points = data.map((d, i) => [x(i), y(d.volume)]);
-      const linePath = points.map(([px, py], i) => `${i === 0 ? "M" : "L"} ${px} ${py}`).join(" ");
-      const baseline = height - padBottom;
-      const areaPath =
-        points.length > 0
-          ? `${linePath} L ${points[points.length - 1][0]} ${baseline} L ${points[0][0]} ${baseline} Z`
-          : "";
-
-      const gridCount = 4;
-      const gridLines = Array.from({ length: gridCount + 1 }, (_, i) => {
-        const t = i / gridCount;
-        const gy = padTop + t * usableH;
-        const label = Math.round(max * (1 - t));
-        return { gy, label };
-      });
-
-      return (
-        <svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full overflow-visible">
-          <defs>
-            <linearGradient id="volumeFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={PRIMARY} stopOpacity="0.32" />
-              <stop offset="100%" stopColor={PRIMARY} stopOpacity="0.02" />
-            </linearGradient>
-          </defs>
-
-          {gridLines.map((g, idx) => (
-            <g key={idx}>
-              <line x1={padLeft} x2={width - padRight} y1={g.gy} y2={g.gy} stroke="#e6eeff" strokeDasharray="4 4" />
-              <text x="6" y={g.gy + 4} fontSize="10" fill="#8390a8">{g.label.toLocaleString()}</text>
-            </g>
-          ))}
-
-          {data.map((d, i) => (
-            <text
-              key={d.day}
-              x={x(i)}
-              y={height - 10}
-              fontSize="11"
-              textAnchor="middle"
-              fill="#8390a8"
-            >
-              {d.day}
-            </text>
-          ))}
-
-          {areaPath ? <path d={areaPath} fill="url(#volumeFill)" /> : null}
-          {linePath ? <path d={linePath} fill="none" stroke={PRIMARY} strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" /> : null}
-
-          {points.map(([px, py], i) => (
-            <g key={i}>
-              <circle cx={px} cy={py} r="4.5" fill="#ffffff" stroke={PRIMARY} strokeWidth="3" />
-            </g>
-          ))}
-        </svg>
-      );
-    }
-
-    function PieChartSvg({ data }) {
-      const [activeIndex, setActiveIndex] = useState(0);
-      const total = data.reduce((sum, item) => sum + item.value, 0) || 1;
-      const cx = 180;
-      const cy = 140;
-      const r = 96;
-
-      let current = -90;
-      const arcs = data.map((item, index) => {
-        const sweep = (item.value / total) * 360;
-        const start = current;
-        const end = current + sweep;
-        current = end;
-        return {
-          ...item,
-          index,
-          start,
-          end,
-          path: slicePath(cx, cy, r, start, end)
-        };
-      });
-
-      const active = arcs[activeIndex] || arcs[0];
-
-      return (
-        <div className="flex h-full flex-col">
-          <svg viewBox="0 0 360 280" className="w-full">
-            {arcs.map((arc, idx) => (
-              <path
-                key={idx}
-                d={arc.path}
-                fill={COLORS[idx % COLORS.length]}
-                opacity={idx === activeIndex ? 1 : 0.82}
-                onMouseEnter={() => setActiveIndex(idx)}
-                style={{ cursor: "pointer" }}
-              />
-            ))}
-
-            <circle cx={cx} cy={cy} r="52" fill="white" />
-            <text x={cx} y={cy - 4} fontSize="16" fontWeight="700" textAnchor="middle" fill="#0f172a">
-              {active ? active.name : "Mix"}
-            </text>
-            <text x={cx} y={cy + 16} fontSize="11" textAnchor="middle" fill="#64748b">
-              {active ? `${active.value}%` : "Portfolio"}
-            </text>
-          </svg>
-
-          <div className="mt-2 flex flex-wrap gap-2">
-            {data.map((item, i) => (
-              <button
-                key={item.name}
-                onMouseEnter={() => setActiveIndex(i)}
-                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#4b76f9]/30 hover:text-[#3f63d8]"
-              >
-                <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: COLORS[i % COLORS.length] }} />
-                {item.name} · {item.value}%
-              </button>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    function App() {
-      const [wallet, setWallet] = useState(DEMO_WALLET);
-      const [query, setQuery] = useState(DEMO_WALLET);
-      const [musicOn, setMusicOn] = useState(false);
-      const [showPanel, setShowPanel] = useState(false);
-      const [copied, setCopied] = useState(false);
-
-      useAmbientAudio(musicOn);
-
-      const profile = useMemo(() => {
-        const normalized = wallet.trim().toLowerCase();
-        return PROFILE_BY_WALLET[normalized] || DEFAULT_PROFILE;
-      }, [wallet]);
-
-      const chartData = profile.timeline && profile.timeline.length
-        ? profile.timeline
-        : [
-            { day: "Mon", volume: 3000 },
-            { day: "Tue", volume: 5200 },
-            { day: "Wed", volume: 4800 },
-            { day: "Thu", volume: 6100 },
-            { day: "Fri", volume: 7400 },
-            { day: "Sat", volume: 6800 },
-            { day: "Sun", volume: 8200 }
-          ];
-
-      const tokenData = profile.tokenMix && profile.tokenMix.length
-        ? profile.tokenMix
-        : [
-            { name: "Domains", value: 50 },
-            { name: "Tokens", value: 30 },
-            { name: "NFTs", value: 20 }
-          ];
-
-      const shortWallet = truncate(wallet);
-      const isDemo = wallet.toLowerCase() === DEMO_WALLET.toLowerCase();
-
-      const handleLookup = () => {
-        setWallet(query.trim() || DEMO_WALLET);
-      };
-
-      const copyAddress = async () => {
-        try {
-          await navigator.clipboard.writeText(wallet);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1400);
-        } catch (e) {
-          alert("Không thể copy địa chỉ. Trình duyệt có thể đang chặn clipboard.");
-        }
-      };
-
-      const statusCards = [
-        { title: "Domains Held", value: profile.stats.domains, icon: Globe, delta: "+7 active" },
-        { title: "Portfolio Value", value: profile.stats.value, icon: BadgeDollarSign, delta: "+12.6%" },
-        { title: "Transactions", value: profile.stats.txs.toLocaleString(), icon: Activity, delta: "+91 today" },
-        { title: "Tokenized Assets", value: profile.stats.totalTokens, icon: Coins, delta: "+29 linked" }
-      ];
-
-      return (
-        <div className="min-h-screen bg-white text-slate-900">
-          <div className="pointer-events-none fixed inset-0 -z-20 bg-[radial-gradient(circle_at_top,#4b76f91a,transparent_55%)]" />
-          <div className="pointer-events-none fixed inset-0 -z-10 opacity-[0.12] soft-grid" />
-          <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-            <div className="absolute left-[-5rem] top-16 h-72 w-72 rounded-full bg-[#4b76f9]/15 blur-3xl" />
-            <div className="absolute right-[-4rem] top-32 h-96 w-96 rounded-full bg-cyan-300/20 blur-3xl" />
-            <div className="absolute bottom-10 left-1/3 h-80 w-80 rounded-full bg-violet-300/15 blur-3xl" />
+            <p className="text-slate-500 mt-1">
+              Wallet • Domains • Identity • Portfolio
+            </p>
           </div>
 
-          <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/85 glass">
-            <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#4b76f9] shadow-lg shadow-[#4b76f9]/20">
-                  <img
-                    src="logo-doma.svg"
-                    alt="Doma"
-                    className="h-7 w-7 object-contain"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
-                  <Globe className="hidden text-white" size={20} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-xl font-black tracking-tight text-[#4b76f9] sm:text-2xl">DOMA Identity Dashboard</h1>
-                    <Pill className="hidden sm:inline-flex">DomainFi</Pill>
-                  </div>
-                  <p className="text-xs text-slate-500 sm:text-sm">Track domains, tokenized assets, trades and identity in one clean interface</p>
-                </div>
-              </div>
-
-              <div className="hidden items-center gap-3 md:flex">
-                <button
-                  onClick={() => setMusicOn((v) => !v)}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#4b76f9]/30 hover:text-[#3f63d8]"
-                >
-                  {musicOn ? <Pause size={16} /> : <Play size={16} />}
-                  {musicOn ? "Music On" : "Play Music"}
-                </button>
-                <button
-                  onClick={() => {
-                    setWallet(DEMO_WALLET);
-                    setQuery(DEMO_WALLET);
-                  }}
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#4b76f9]/30 hover:text-[#3f63d8]"
-                >
-                  <RefreshCcw size={16} />
-                  Reset Demo
-                </button>
-              </div>
-            </div>
-          </header>
-
-          <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-            <section className="rounded-[34px] border border-slate-200 bg-white/95 p-5 shadow-[0_25px_70px_rgba(15,23,42,0.06)] glass sm:p-6">
-              <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr] xl:items-center">
-                <div>
-                  <div className="mb-4 flex flex-wrap items-center gap-2">
-                    <Pill className="bg-[#4b76f9] text-white">MIA style dashboard</Pill>
-                    <Pill>Web3 Identity</Pill>
-                    <Pill>DomainFi Analytics</Pill>
-                  </div>
-
-                  <h2 className="max-w-3xl text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">
-                    A professional Doma wallet and domain tracker with real-time identity context.
-                  </h2>
-
-                  <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">
-                    Search a wallet, inspect domains held, review buy/sell history, see tokenized assets, and present the user profile in a modern Doma-inspired dashboard.
-                  </p>
-
-                  <div className="mt-5 flex flex-wrap items-center gap-3">
-                    <button
-                      onClick={handleLookup}
-                      className="inline-flex items-center gap-2 rounded-2xl bg-[#4b76f9] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#4b76f9]/20 transition hover:-translate-y-0.5 hover:bg-[#3f63d8]"
-                    >
-                      <Search size={16} /> Lookup Wallet
-                    </button>
-                    <button
-                      onClick={copyAddress}
-                      className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-[#4b76f9]/30 hover:text-[#3f63d8]"
-                    >
-                      <Copy size={16} /> {copied ? "Copied!" : "Copy Address"}
-                    </button>
-                    <button
-                      onClick={() => setShowPanel((v) => !v)}
-                      className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-[#4b76f9]/30 hover:text-[#3f63d8]"
-                    >
-                      <Sparkles size={16} /> {showPanel ? "Hide" : "Show"} Studio Panel
-                    </button>
-                  </div>
-
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="rounded-3xl border border-[#4b76f9]/15 bg-[#4b76f9]/6 p-4">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Current wallet</p>
-                      <p className="mt-2 font-mono text-sm font-black text-slate-900">{shortWallet}</p>
-                    </div>
-                    <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Domains</p>
-                      <p className="mt-2 text-2xl font-black text-slate-900">{profile.stats.domains}</p>
-                    </div>
-                    <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Wallet score</p>
-                      <p className="mt-2 text-2xl font-black text-slate-900">{profile.stats.walletScore}/100</p>
-                    </div>
-                    <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Identity</p>
-                      <p className="mt-2 text-sm font-bold text-slate-900">{profile.identity.role}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="relative overflow-hidden rounded-[30px] border border-[#4b76f9]/15 bg-gradient-to-br from-[#4b76f9]/10 via-white to-cyan-50 p-5">
-                  <div className="absolute right-[-1rem] top-0 text-[160px] font-black leading-none text-[#4b76f9]/10">DOMA</div>
-                  <div className="relative z-10 flex items-center gap-4">
-                    <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-[30px] border border-[#4b76f9]/20 bg-white shadow-lg shadow-[#4b76f9]/10">
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#4b76f9_0%,#8fb2ff_50%,#ffffff_90%)]" />
-                      <div className="absolute inset-0 flex items-center justify-center text-6xl">🐸</div>
-                    </div>
-                    <div>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Studio host</p>
-                      <h3 className="mt-1 text-2xl font-black text-slate-900">Blue Web3 presenter</h3>
-                      <p className="mt-2 max-w-md text-sm leading-6 text-slate-600">
-                        Clean, bright, Doma-inspired, and optimized for identity analysis, domain tracking and ecosystem storytelling.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="relative z-10 mt-5 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-3xl bg-white/85 p-4 shadow-sm backdrop-blur">
-                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Style</p>
-                      <p className="mt-1 font-bold text-slate-900">Modern tech</p>
-                    </div>
-                    <div className="rounded-3xl bg-white/85 p-4 shadow-sm backdrop-blur">
-                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Theme</p>
-                      <p className="mt-1 font-bold text-slate-900">Light blue</p>
-                    </div>
-                    <div className="rounded-3xl bg-white/85 p-4 shadow-sm backdrop-blur">
-                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Focus</p>
-                      <p className="mt-1 font-bold text-slate-900">Identity + Domains</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <div className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-              <Card className="p-5 sm:p-6">
-                <SectionTitle
-                  subtitle="Wallet lookup"
-                  title="Enter a wallet address"
-                  right={<Pill>{isDemo ? "Demo data loaded" : "Custom lookup"}</Pill>}
-                />
-
-                <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto_auto]">
-                  <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus-within:border-[#4b76f9]">
-                    <Search size={16} className="text-slate-400" />
-                    <input
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      className="w-full bg-transparent text-sm outline-none"
-                      placeholder="0xe23153b21Cb41fFbc2cD08e2d0017a2B3Bc6c8c5"
-                    />
-                  </div>
-                  <button
-                    onClick={handleLookup}
-                    className="rounded-2xl bg-[#4b76f9] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#4b76f9]/20 transition hover:bg-[#3f63d8]"
-                  >
-                    Search Profile
-                  </button>
-                  <button
-                    onClick={() => {
-                      setWallet(DEMO_WALLET);
-                      setQuery(DEMO_WALLET);
-                    }}
-                    className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-[#4b76f9]/30 hover:text-[#3f63d8]"
-                  >
-                    Reset Demo
-                  </button>
-                </div>
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  {statusCards.map((s, i) => (
-                    <StatCard key={i} {...s} />
-                  ))}
-                </div>
-
-                <div className="mt-6 grid gap-6 lg:grid-cols-2">
-                  <Card className="p-5">
-                    <SectionTitle subtitle="Analytics" title="Trading volume" right={<BarChart3 className="text-[#4b76f9]" size={20} />} />
-                    <div className="mt-4 h-[320px]">
-                      <AreaChartSvg data={chartData} />
-                    </div>
-                  </Card>
-
-                  <Card className="p-5">
-                    <SectionTitle subtitle="Distribution" title="Tokenized asset mix" right={<Database className="text-[#4b76f9]" size={20} />} />
-                    <div className="mt-4 h-[320px]">
-                      <PieChartSvg data={tokenData} />
-                    </div>
-                  </Card>
-                </div>
-              </Card>
-
-              <div className="space-y-6">
-                <Card className="p-5 sm:p-6">
-                  <SectionTitle subtitle="Identity verification" title="Profile trust layer" right={<ShieldCheck className="text-[#4b76f9]" size={20} />} />
-                  <div className="mt-4 space-y-3">
-                    {[
-                      ["Doma OG Candidate", true],
-                      ["Onchain Wallet Verified", true],
-                      ["Social Profiles Connected", true],
-                      ["DomainFi Researcher", true]
-                    ].map(([label, ok]) => (
-                      <div key={label} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                        <CheckCircle2 className="text-[#4b76f9]" size={18} />
-                        <div className="flex-1">
-                          <p className="font-semibold text-slate-900">{label}</p>
-                          <p className="text-xs text-slate-500">{ok ? "Verified and visible" : "Pending"}</p>
-                        </div>
-                        <Pill>OK</Pill>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-
-                <Card className="overflow-hidden p-0">
-                  <div className="bg-gradient-to-br from-[#4b76f9] via-[#5781ff] to-cyan-400 p-5 text-white">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-3xl shadow-lg">
-                        🐸
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/80">Host card</p>
-                        <h3 className="text-2xl font-black">Blue Pepe / Studio Host</h3>
-                        <p className="mt-1 text-sm text-white/85">A meme-friendly presenter for onchain identity analysis.</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-5">
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <DetailCard title="Role" text="Explainer + guide for domain holders and Web3 users." icon={Sparkles} />
-                      <DetailCard title="Focus" text="Wallet data, tokenized assets, and domain ownership signals." icon={Wallet} />
-                      <DetailCard title="Audience" text="New users, community members, and early supporters." icon={Users} />
-                      <DetailCard title="Style" text="Bright, modern, readable, and Doma-inspired." icon={LayoutDashboard} />
-                    </div>
-                  </div>
-                </Card>
-
-                {showPanel ? (
-                  <Card className="p-5 sm:p-6">
-                    <SectionTitle subtitle="Studio panel" title="Visual settings" right={<Sparkles className="text-[#4b76f9]" size={20} />} />
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                      <DetailCard title="Background" text="Add /bg.gif or /bg.mp4 to enrich the landing view." icon={Grid2X2} />
-                      <DetailCard title="Music" text="Add /music.mp3 for ambient futuristic sound." icon={Headphones} />
-                      <DetailCard title="Avatar" text="Add /avatar.png for a custom profile image." icon={User} />
-                      <DetailCard title="Logo" text="Add /logo-doma.svg for brand consistency." icon={Globe} />
-                    </div>
-                  </Card>
-                ) : null}
-              </div>
-            </div>
-
-            <div className="mt-6 grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-              <Card className="p-5 sm:p-6">
-                <SectionTitle subtitle="Profile content" title="About this wallet" right={<Pill>{shortWallet}</Pill>} />
-                <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                  <DetailCard title="Bio" text={profile.bio} icon={BookOpen} />
-                  <DetailCard title="Location" text={profile.location} icon={MapPin} />
-                  <DetailCard title="Region" text={profile.region} icon={Globe} />
-                  <DetailCard title="Community" text={profile.discord} icon={Bell} />
-                </div>
-
-                <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  {profile.sectors.map((s) => (
-                    <Pill key={s}>{s}</Pill>
-                  ))}
-                </div>
-
-                <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                  <LinkChip href={profile.linkedin} label="LinkedIn" />
-                  <LinkChip href={profile.x} label="X / Twitter" />
-                  <LinkChip href={profile.github} label="GitHub" />
-                  <LinkChip href={profile.company} label="Company" />
-                </div>
-              </Card>
-
-              <Card className="p-5 sm:p-6">
-                <SectionTitle subtitle="Quick status" title="Live summary" right={<BadgeCheck className="text-[#4b76f9]" size={20} />} />
-                <div className="mt-4 space-y-3">
-                  <div className="rounded-3xl bg-slate-50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Tokenized assets</p>
-                    <p className="mt-1 text-3xl font-black text-slate-900">{profile.stats.totalTokens}</p>
-                  </div>
-                  <div className="rounded-3xl bg-slate-50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Portfolio value</p>
-                    <p className="mt-1 text-3xl font-black text-slate-900">{profile.stats.value}</p>
-                  </div>
-                  <div className="rounded-3xl bg-slate-50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Identity level</p>
-                    <p className="mt-1 text-xl font-black text-slate-900">{profile.identity.level}</p>
-                  </div>
-                </div>
-              </Card>
-            </div>
-
-            <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_1fr]">
-              <Card className="p-5 sm:p-6">
-                <SectionTitle subtitle="Portfolio" title="Domains held" right={<Globe className="text-[#4b76f9]" size={20} />} />
-                <div className="mt-5 space-y-3">
-                  {profile.domains && profile.domains.length ? (
-                    profile.domains.map((d) => <DomainRow key={d.name} {...d} />)
-                  ) : (
-                    <EmptyState title="No domains found" text="This wallet has no visible domain holdings in the demo dataset." />
-                  )}
-                </div>
-              </Card>
-
-              <Card className="p-5 sm:p-6">
-                <SectionTitle subtitle="Market actions" title="Buy / sell history" right={<Activity className="text-[#4b76f9]" size={20} />} />
-                <div className="mt-5 space-y-3">
-                  {profile.trades && profile.trades.length ? (
-                    profile.trades.map((t) => <TradeRow key={t.time + "-" + t.item} {...t} />)
-                  ) : (
-                    <EmptyState title="No trades found" text="This wallet has no visible buy/sell history in the demo dataset." />
-                  )}
-                </div>
-              </Card>
-            </div>
-
-            <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.9fr]">
-              <Card className="p-5 sm:p-6">
-                <SectionTitle subtitle="Asset ledger" title="Tokenized assets" right={<Coins className="text-[#4b76f9]" size={20} />} />
-                <div className="mt-5 space-y-3">
-                  {profile.holdings && profile.holdings.length ? (
-                    profile.holdings.map((h) => <HoldingRow key={h.asset} {...h} />)
-                  ) : (
-                    <EmptyState title="No tokenized assets" text="This wallet has no visible tokenized assets in the demo dataset." />
-                  )}
-                </div>
-              </Card>
-
-              <Card className="p-5 sm:p-6">
-                <SectionTitle subtitle="Onchain report" title="Why this matters" right={<TerminalSquare className="text-[#4b76f9]" size={20} />} />
-                <div className="mt-4 space-y-4 text-sm leading-7 text-slate-700">
-                  <p>
-                    This dashboard is designed as a modern Doma-inspired identity and portfolio view. It helps users see wallet activity, domains, and tokenized assets without a cluttered dark interface.
-                  </p>
-                  <p>
-                    The layout prioritizes readable charts, bright brand colors, identity verification, and a quick scan of ownership data.
-                  </p>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <DetailCard title="Search" text="Enter a wallet to load a different demo profile or future API result." icon={Search} />
-                    <DetailCard title="Identity" text="Show profile, social links, and trust signals in one place." icon={ShieldCheck} />
-                  </div>
-                </div>
-              </Card>
-            </div>
-
-            <footer className="mt-6 rounded-[30px] border border-[#4b76f9]/15 bg-[#4b76f9]/6 p-5 text-center shadow-sm">
-              <p className="text-sm font-semibold text-slate-700">
-                Built for Doma-style wallet analytics, domain profiling and DomainFi storytelling.
-              </p>
-              <p className="mt-2 text-xs text-slate-500">
-                Replace the demo arrays with real API data when you connect Doma, wallet indexers, or onchain subgraphs.
-              </p>
-            </footer>
-          </main>
-
-          <audio
-            autoPlay={false}
-            loop={false}
-            controls
-            className="fixed bottom-4 right-4 z-50 rounded-2xl border border-slate-200 bg-white/90 p-2 shadow-xl backdrop-blur"
+          <button
+            onClick={() => navigator.clipboard.writeText(wallet)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-bold"
           >
-            <source src="music.mp3" type="audio/mpeg" />
-          </audio>
-        </div>
-      );
-    }
+            Copy Wallet
+          </button>
 
-    const root = ReactDOM.createRoot(document.getElementById("root"));
-    root.render(<App />);
-  </script>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-6 py-8">
+
+        <section className="glass rounded-[30px] p-8 shadow-xl border border-blue-100">
+
+          <div className="grid xl:grid-cols-2 gap-8 items-center">
+
+            <div>
+
+              <div className="flex flex-wrap gap-3 mb-5">
+                <span className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold">
+                  DomainFi
+                </span>
+
+                <span className="bg-white border border-blue-200 px-4 py-2 rounded-full text-sm font-bold text-blue-600">
+                  Web3 Identity
+                </span>
+              </div>
+
+              <h2 className="text-5xl font-black leading-tight text-slate-900">
+                Professional Wallet & Domain Tracker
+              </h2>
+
+              <p className="mt-5 text-slate-600 text-lg leading-8">
+                Search wallet activity, tokenized assets, domain ownership,
+                identity data and portfolio analytics.
+              </p>
+
+              <div className="mt-8 flex gap-4 flex-wrap">
+
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-2xl font-bold">
+                  Lookup Wallet
+                </button>
+
+                <button className="border border-blue-200 bg-white px-6 py-4 rounded-2xl font-bold text-blue-600">
+                  Identity Verified
+                </button>
+
+              </div>
+
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-500 to-cyan-400 rounded-[30px] p-8 text-white relative overflow-hidden">
+
+              <div className="absolute right-[-20px] top-[-20px] text-[180px] font-black opacity-10">
+                DOMA
+              </div>
+
+              <div className="relative z-10">
+
+                <div className="w-32 h-32 rounded-[30px] bg-white/20 flex items-center justify-center text-7xl shadow-2xl">
+                  🐸
+                </div>
+
+                <h3 className="mt-6 text-3xl font-black">
+                  Blue Web3 Presenter
+                </h3>
+
+                <p className="mt-4 leading-8 text-blue-50">
+                  Clean modern interface for domains, wallets and Web3 identity analytics.
+                </p>
+
+                <div className="grid grid-cols-3 gap-4 mt-8">
+
+                  <div className="bg-white/20 rounded-2xl p-4 backdrop-blur">
+                    <div className="text-sm opacity-80">Theme</div>
+                    <div className="font-black mt-1">Blue</div>
+                  </div>
+
+                  <div className="bg-white/20 rounded-2xl p-4 backdrop-blur">
+                    <div className="text-sm opacity-80">Style</div>
+                    <div className="font-black mt-1">Modern</div>
+                  </div>
+
+                  <div className="bg-white/20 rounded-2xl p-4 backdrop-blur">
+                    <div className="text-sm opacity-80">Focus</div>
+                    <div className="font-black mt-1">Identity</div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <section className="grid md:grid-cols-2 xl:grid-cols-4 gap-5 mt-8">
+
+          {stats.map((item, index) => (
+            <div
+              key={index}
+              className="glass rounded-[28px] p-6 border border-blue-100 shadow-lg"
+            >
+              <div className="text-sm uppercase tracking-widest text-slate-500 font-bold">
+                {item.title}
+              </div>
+
+              <div className="text-4xl font-black mt-4 text-slate-900">
+                {item.value}
+              </div>
+            </div>
+          ))}
+
+        </section>
+
+        <section className="grid xl:grid-cols-2 gap-6 mt-8">
+
+          <div className="glass rounded-[30px] p-8 border border-blue-100 shadow-lg">
+
+            <h3 className="text-3xl font-black text-slate-900">
+              Domains Held
+            </h3>
+
+            <div className="space-y-4 mt-8">
+
+              {domains.map((domain, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-2xl p-5 border border-slate-100 flex items-center justify-between"
+                >
+                  <div>
+                    <div className="font-black text-lg text-slate-900">
+                      {domain}
+                    </div>
+
+                    <div className="text-slate-500 mt-1 text-sm">
+                      Domain Asset
+                    </div>
+                  </div>
+
+                  <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full font-bold text-sm">
+                    Active
+                  </span>
+                </div>
+              ))}
+
+            </div>
+
+          </div>
+
+          <div className="glass rounded-[30px] p-8 border border-blue-100 shadow-lg">
+
+            <h3 className="text-3xl font-black text-slate-900">
+              Trading History
+            </h3>
+
+            <div className="space-y-4 mt-8">
+
+              {trades.map((trade, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-2xl p-5 border border-slate-100 flex items-center justify-between"
+                >
+                  <div>
+                    <div className="font-black text-lg text-slate-900">
+                      {trade.action}
+                    </div>
+
+                    <div className="text-slate-500 mt-1 text-sm">
+                      {trade.item}
+                    </div>
+                  </div>
+
+                  <div className="font-black text-blue-600 text-xl">
+                    {trade.value}
+                  </div>
+                </div>
+              ))}
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <section className="glass rounded-[30px] p-8 border border-blue-100 shadow-lg mt-8">
+
+          <h3 className="text-3xl font-black text-slate-900">
+            About This Wallet
+          </h3>
+
+          <p className="mt-6 text-slate-600 leading-9 text-lg">
+            Hello, I am marginla, a Web3 enthusiast and crypto content creator with a strong passion for blockchain innovation, digital culture, and emerging technologies.
+          </p>
+
+          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-5 mt-8">
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-100">
+              <div className="text-sm uppercase tracking-widest text-slate-500 font-bold">
+                Region
+              </div>
+
+              <div className="font-black text-xl mt-3">
+                APAC
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-100">
+              <div className="text-sm uppercase tracking-widest text-slate-500 font-bold">
+                Location
+              </div>
+
+              <div className="font-black text-xl mt-3">
+                Vietnam
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-100">
+              <div className="text-sm uppercase tracking-widest text-slate-500 font-bold">
+                Role
+              </div>
+
+              <div className="font-black text-xl mt-3">
+                Doma OG
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 border border-slate-100">
+              <div className="text-sm uppercase tracking-widest text-slate-500 font-bold">
+                Wallet
+              </div>
+
+              <div className="font-black text-lg mt-3 break-all">
+                {wallet}
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <footer className="mt-10 text-center text-slate-500 pb-10">
+          Built for Doma style identity analytics.
+        </footer>
+
+      </main>
+
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+</script>
+
 </body>
 </html>
+```
