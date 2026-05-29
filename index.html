@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>DOMA Identity — DomainFi Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+:root {
+  --p: #4b76f9;
+  --p2: #3560e8;
+  --p3: #6e96ff;
+  --bg: #f0f4ff;
+  --card: #ffffff;
+  --text: #0d1b3e;
+  --muted: #5a6a8a;
+  --border: rgba(75,118,249,0.15);
+  --glow: rgba(75,118,249,0.18);
+  --accent: #00e5c3;
+  --warn: #ff6b35;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden}
+
+/* bg canvas */
+#bg-canvas{position:fixed;inset:0;z-index:-5;opacity:0.45}
+.bg-media-layer{position:fixed;inset:0;z-index:-4;object-fit:cover;width:100%;height:100%;opacity:0.18;pointer-events:none}
+.bg-overlay{position:fixed;inset:0;z-index:-3;background:linear-gradient(135deg,rgba(240,244,255,0.88) 0%,rgba(220,232,255,0.92) 100%);pointer-events:none}
+
+/* layout */
+.wrap{max-width:1380px;margin:0 auto;padding:0 24px}
+
+/* header */
+header{position:sticky;top:0;z-index:200;background:rgba(240,244,255,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:16px}
+.logo-box{display:flex;align-items:center;gap:12px}
+.logo-badge{width:44px;height:44px;border-radius:14px;background:var(--p);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(75,118,249,0.35);font-size:22px}
+.logo-title{font-family:var(--font-head);font-weight:800;font-size:20px;color:var(--p);letter-spacing:-0.5px}
+.logo-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:50px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;outline:none}
+.btn-primary{background:var(--p);color:#fff;box-shadow:0 4px 16px rgba(75,118,249,0.3)}
+.btn-primary:hover{background:var(--p2);transform:translateY(-1px);box-shadow:0 6px 24px rgba(75,118,249,0.4)}
+.btn-ghost{background:white;color:var(--text);border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--p);color:var(--p)}
+.btn-accent{background:var(--accent);color:#0d1b3e;box-shadow:0 4px 14px rgba(0,229,195,0.3)}
+.btn-accent:hover{filter:brightness(0.92);transform:translateY(-1px)}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse-dot 1.5s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(1.3)}}
+
+/* hero */
+.hero{padding:52px 0 36px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+@media(max-width:900px){.hero{grid-template-columns:1fr;gap:24px}}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:50px;background:rgba(75,118,249,0.1);border:1px solid rgba(75,118,249,0.25);font-size:12px;font-weight:600;color:var(--p);margin-bottom:20px}
+.hero-h1{font-family:var(--font-head);font-size:52px;font-weight:800;line-height:1.08;letter-spacing:-1.5px;color:var(--text)}
+@media(max-width:900px){.hero-h1{font-size:36px}}
+.hero-h1 .accent{color:var(--p)}
+.hero-desc{margin-top:18px;font-size:16px;line-height:1.7;color:var(--muted);max-width:480px}
+.hero-btns{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:32px}
+.stat-mini{background:white;border-radius:18px;padding:16px;border:1px solid var(--border);text-align:center}
+.stat-mini-val{font-family:var(--font-head);font-size:26px;font-weight:800;color:var(--p)}
+.stat-mini-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px}
+
+/* profile card hero right */
+.profile-card{background:white;border-radius:28px;border:1.5px solid var(--border);padding:28px;box-shadow:0 20px 60px rgba(75,118,249,0.1);position:relative;overflow:hidden}
+.profile-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(75,118,249,0.04) 0%,transparent 60%);pointer-events:none}
+.profile-avatar-wrap{position:relative;width:88px;height:88px;margin-bottom:16px}
+.profile-avatar{width:88px;height:88px;border-radius:22px;object-fit:cover;background:linear-gradient(135deg,var(--p),var(--p3));display:flex;align-items:center;justify-content:center;font-size:40px;border:3px solid white;box-shadow:0 8px 24px rgba(75,118,249,0.25)}
+.profile-avatar img{width:100%;height:100%;border-radius:19px;object-fit:cover}
+.verified-badge{position:absolute;bottom:-4px;right:-4px;width:24px;height:24px;border-radius:50%;background:var(--p);border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:11px}
+.profile-name{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--text)}
+.profile-handle{font-family:var(--font-mono);font-size:13px;color:var(--p);margin-top:3px}
+.profile-bio{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.6}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.tag{padding:5px 11px;border-radius:50px;background:rgba(75,118,249,0.08);border:1px solid rgba(75,118,249,0.18);font-size:11px;font-weight:600;color:var(--p)}
+.score-bar-wrap{margin-top:16px}
+.score-label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.score-track{height:8px;border-radius:4px;background:#e8edff;overflow:hidden}
+.score-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--p),var(--accent));transition:width 1s ease}
+.social-links{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.social-link{padding:7px 13px;border-radius:50px;background:#f0f4ff;font-size:12px;font-weight:600;color:var(--text);text-decoration:none;transition:all 0.2s;display:flex;align-items:center;gap:5px}
+.social-link:hover{background:var(--p);color:white}
+
+/* search bar */
+.search-section{background:white;border-radius:24px;border:1.5px solid var(--border);padding:24px;margin-bottom:28px;box-shadow:0 8px 30px rgba(75,118,249,0.06)}
+.search-row{display:flex;gap:10px;align-items:center}
+.search-input-wrap{flex:1;display:flex;align-items:center;gap:10px;background:#f0f4ff;border-radius:14px;padding:12px 16px;border:1.5px solid var(--border);transition:border-color 0.2s}
+.search-input-wrap:focus-within{border-color:var(--p)}
+.search-input-wrap input{flex:1;background:none;border:none;outline:none;font-family:var(--font-body);font-size:14px;color:var(--text)}
+.search-input-wrap input::placeholder{color:var(--muted)}
+.recent-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.recent-tag{padding:5px 12px;border-radius:50px;background:#f0f4ff;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border:1px solid var(--border);transition:all 0.2s}
+.recent-tag:hover{border-color:var(--p);color:var(--p)}
+
+/* section */
+.section{margin-bottom:32px}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px}
+.section-title{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--text)}
+.section-sub{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px}
+.section-badge{padding:4px 12px;border-radius:50px;background:rgba(75,118,249,0.1);border:1px solid rgba(75,118,249,0.2);font-size:11px;font-weight:700;color:var(--p)}
+
+/* grid layouts */
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.grid-3{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}}
+@media(max-width:640px){.grid-4,.grid-3{grid-template-columns:1fr}}
+
+/* stat card */
+.stat-card{background:white;border-radius:20px;padding:20px;border:1.5px solid var(--border);box-shadow:0 4px 20px rgba(75,118,249,0.05);transition:all 0.25s;position:relative;overflow:hidden}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(75,118,249,0.12);border-color:rgba(75,118,249,0.3)}
+.stat-card::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:var(--glow);pointer-events:none}
+.stat-icon{width:40px;height:40px;border-radius:12px;background:rgba(75,118,249,0.1);display:flex;align-items:center;justify-content:center;color:var(--p);margin-bottom:12px;font-size:18px}
+.stat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted)}
+.stat-value{font-family:var(--font-head);font-size:30px;font-weight:800;color:var(--text);margin:6px 0}
+.stat-delta{font-size:12px;font-weight:600;color:#22c55e;display:flex;align-items:center;gap:4px}
+
+/* card */
+.card{background:white;border-radius:24px;padding:24px;border:1.5px solid var(--border);box-shadow:0 4px 24px rgba(75,118,249,0.05)}
+
+/* media upload zone */
+.media-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.media-tab{padding:8px 16px;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--muted);transition:all 0.2s}
+.media-tab.active{background:var(--p);color:white;border-color:var(--p)}
+.upload-zone{border:2px dashed rgba(75,118,249,0.35);border-radius:20px;padding:36px;text-align:center;background:rgba(75,118,249,0.03);transition:all 0.2s;cursor:pointer}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--p);background:rgba(75,118,249,0.07)}
+.upload-icon{font-size:36px;margin-bottom:12px}
+.upload-title{font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px}
+.upload-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.upload-hint{margin-top:10px;font-size:11px;font-weight:600;color:var(--p);background:rgba(75,118,249,0.08);padding:5px 12px;border-radius:50px;display:inline-block}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:16px}
+.media-item{border-radius:16px;overflow:hidden;position:relative;background:#f0f4ff;border:1.5px solid var(--border);aspect-ratio:16/10}
+.media-item img,.media-item video{width:100%;height:100%;object-fit:cover}
+.media-item-overlay{position:absolute;inset:0;background:rgba(13,27,62,0.55);opacity:0;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.media-item:hover .media-item-overlay{opacity:1}
+.media-btn-small{padding:6px 12px;border-radius:50px;background:white;color:var(--text);font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s}
+.media-btn-small:hover{background:var(--p);color:white}
+.media-item-label{position:absolute;bottom:0;left:0;right:0;padding:6px 10px;background:rgba(13,27,62,0.7);font-size:10px;font-weight:600;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.set-bg-badge{position:absolute;top:6px;right:6px;background:var(--accent);color:#0d1b3e;font-size:9px;font-weight:800;padding:2px 7px;border-radius:50px}
+
+/* preview panel */
+.preview-panel{border-radius:20px;overflow:hidden;position:relative;background:#0d1b3e;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
+.preview-panel video,.preview-panel img{width:100%;height:100%;object-fit:cover}
+.preview-placeholder{color:rgba(255,255,255,0.25);font-size:36px;text-align:center}
+.preview-controls{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.preview-label{font-size:12px;font-weight:600;color:var(--muted);flex:1}
+
+/* domain table */
+.domain-table{width:100%;border-collapse:collapse}
+.domain-table th{text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted);padding:0 12px 12px;border-bottom:1.5px solid #e8edff}
+.domain-row{transition:background 0.15s;cursor:default}
+.domain-row:hover{background:#f8f9ff}
+.domain-row td{padding:14px 12px;border-bottom:1px solid #f0f4ff;font-size:14px;font-weight:500;color:var(--text)}
+.domain-name{font-family:var(--font-mono);font-weight:600;color:var(--p)}
+.health-bar{height:6px;border-radius:3px;background:#e8edff;overflow:hidden;width:80px}
+.health-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--p),var(--accent))}
+.status-pill{padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700}
+.status-owned{background:#d1fae5;color:#065f46}
+.status-frac{background:#dbeafe;color:#1e40af}
+.status-watch{background:#fef3c7;color:#92400e}
+
+/* trades */
+.trade-card{background:white;border-radius:16px;border:1.5px solid var(--border);padding:16px;display:flex;align-items:center;gap:14px;transition:all 0.2s;margin-bottom:10px}
+.trade-card:hover{border-color:var(--p);transform:translateX(3px)}
+.trade-icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.trade-buy{background:#d1fae5}
+.trade-sell{background:#fee2e2}
+.trade-info{flex:1}
+.trade-action{font-size:13px;font-weight:700;color:var(--text)}
+.trade-note{font-size:12px;color:var(--muted);margin-top:2px}
+.trade-time{font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:3px}
+.trade-size{font-family:var(--font-head);font-size:18px;font-weight:800;color:var(--text)}
+
+/* holding card */
+.holding-card{background:white;border-radius:16px;border:1.5px solid var(--border);padding:16px;transition:all 0.2s;margin-bottom:10px;display:grid;grid-template-columns:1fr auto auto auto;align-items:center;gap:16px}
+.holding-card:hover{border-color:rgba(75,118,249,0.35);box-shadow:0 4px 16px rgba(75,118,249,0.08)}
+@media(max-width:640px){.holding-card{grid-template-columns:1fr 1fr}}
+
+/* chart area */
+.chart-wrap{width:100%;height:260px;position:relative;margin-top:8px}
+
+/* audio player */
+.audio-player{background:white;border-radius:20px;border:1.5px solid var(--border);padding:20px}
+.audio-player-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted);margin-bottom:12px}
+.audio-controls{display:flex;align-items:center;gap:12px}
+.audio-play-btn{width:42px;height:42px;border-radius:50%;background:var(--p);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;transition:all 0.2s;flex-shrink:0}
+.audio-play-btn:hover{background:var(--p2);transform:scale(1.05)}
+.audio-info{flex:1}
+.audio-title{font-size:13px;font-weight:700;color:var(--text)}
+.audio-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.audio-progress-wrap{position:relative;height:4px;background:#e8edff;border-radius:2px;cursor:pointer;margin-top:8px}
+.audio-progress{height:100%;background:var(--p);border-radius:2px;transition:width 0.3s linear}
+.volume-row{display:flex;align-items:center;gap:8px;margin-top:10px}
+.volume-row input{flex:1;accent-color:var(--p)}
+.volume-val{font-size:11px;font-weight:600;color:var(--muted);width:30px;text-align:right}
+
+/* nav tabs */
+.nav-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px;background:white;padding:8px;border-radius:18px;border:1.5px solid var(--border)}
+.nav-tab{padding:9px 18px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;background:none;color:var(--muted)}
+.nav-tab.active{background:var(--p);color:white;box-shadow:0 4px 12px rgba(75,118,249,0.3)}
+.nav-tab:hover:not(.active){background:#f0f4ff;color:var(--p)}
+
+/* identity cards */
+.id-check{display:flex;align-items:center;gap:12px;background:#f8f9ff;border-radius:16px;padding:14px;border:1px solid var(--border);margin-bottom:10px}
+.id-check-icon{width:36px;height:36px;border-radius:12px;background:rgba(75,118,249,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.id-check-text{flex:1}
+.id-check-title{font-size:14px;font-weight:700;color:var(--text)}
+.id-check-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* tips panel */
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.tip-card{background:white;border-radius:18px;padding:18px;border:1.5px solid var(--border);transition:all 0.2s}
+.tip-card:hover{border-color:var(--p);box-shadow:0 4px 20px rgba(75,118,249,0.1)}
+.tip-icon{font-size:28px;margin-bottom:10px}
+.tip-title{font-family:var(--font-head);font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px}
+.tip-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.tip-badge{display:inline-block;margin-top:8px;padding:3px 10px;border-radius:50px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em}
+.tip-badge.new{background:#dbeafe;color:#1e40af}
+.tip-badge.hot{background:#fee2e2;color:#991b1b}
+.tip-badge.soon{background:#fef3c7;color:#92400e}
+
+/* mini chart svg */
+.sparkline-svg{width:100%;height:60px}
+
+/* toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:#0d1b3e;color:white;padding:12px 22px;border-radius:50px;font-size:13px;font-weight:600;z-index:999;transition:transform 0.3s;box-shadow:0 8px 32px rgba(0,0,0,0.25);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* modal overlay */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,27,62,0.55);backdrop-filter:blur(6px);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:white;border-radius:28px;padding:32px;max-width:520px;width:100%;box-shadow:0 30px 80px rgba(13,27,62,0.2);border:1.5px solid var(--border)}
+.modal-title{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);float:right;margin-top:-4px}
+
+/* counter animation */
+@keyframes count-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.count-anim{animation:count-up 0.5s ease both}
+
+/* slider */
+input[type=range]{-webkit-appearance:none;height:4px;border-radius:2px;background:#e8edff;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--p);cursor:pointer;box-shadow:0 2px 8px rgba(75,118,249,0.4)}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(75,118,249,0.25);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--p)}
+
+/* footer */
+footer{background:white;border-top:1.5px solid var(--border);padding:28px 0;margin-top:48px;text-align:center}
+.footer-inner{display:flex;flex-direction:column;align-items:center;gap:10px}
+.footer-logo{font-family:var(--font-head);font-size:18px;font-weight:800;color:var(--p)}
+.footer-text{font-size:13px;color:var(--muted)}
+.footer-links{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.footer-links a{font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.footer-links a:hover{color:var(--p)}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<video id="bg-video" class="bg-media-layer" autoplay loop muted playsinline style="display:none"></video>
+<img id="bg-image" class="bg-media-layer" alt="" style="display:none"/>
+<div class="bg-overlay"></div>
+<div class="toast" id="toast"></div>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useEffect, useMemo, useRef, useState, useCallback } = React;
+
+// ---- CONSTANTS ----
+const P = "#4b76f9";
+const DEMO_WALLET = "0xe23153b21Cb41fFbc2cD08e2d0017a2B3Bc6c8c5";
+const PROFILES = [
+  {
+    id:"main", wallet:DEMO_WALLET, displayName:"marginla", domaName:"marginla.xyz",
+    bio:"Web3 enthusiast & crypto content creator. Deep in DeFi, NFTs, AI projects, onchain communities, and social growth within the Web3 space. Passionate about market narratives, domain branding, and decentralized tech.",
+    location:"Hanoi, Vietnam", region:"APAC", discord:"@marginla",
+    linkedin:"https://www.linkedin.com/in/escaping-night-3bbaa5348/",
+    x:"https://x.com/langqiuzhiwang",
+    github:"https://github.com/mengyoulangzi",
+    company:"https://marginla.xyz",
+    sectors:["DeFi","NFT","AI","Domain Finance"],
+    languages:["TypeScript","JavaScript","C++"],
+    stats:{totalTokens:229,walletScore:91,holdings:14,domains:7,launches:3,buys:18,sells:11,value:"$48.2K",txs:1248},
+    identity:{verified:true,role:"Doma OG Candidate",level:"High signal"},
+    holdings:[
+      {asset:"marginla.xyz",type:"Domain",amount:"1",status:"Owned",value:"$8,400"},
+      {asset:"software.ai",type:"Domain",amount:"0.42 DOT",status:"Fractional",value:"$2,160"},
+      {asset:"brag.com",type:"Domain",amount:"0.15 DOT",status:"Fractional",value:"$1,130"},
+      {asset:"DOMA",type:"Token",amount:"229",status:"Watching",value:"$6,340"},
+      {asset:"AI narrative basket",type:"Token Basket",amount:"5",status:"Tracking",value:"$4,120"},
+    ],
+    trades:[
+      {time:"09:42",action:"Bought",item:"software.ai",size:"$1,120",note:"Early narrative entry"},
+      {time:"12:18",action:"Listed",item:"marginla.xyz",size:"$0",note:"Profile update"},
+      {time:"15:03",action:"Sold",item:"Token fragment",size:"$340",note:"Scaled out"},
+      {time:"18:27",action:"Staked",item:"Doma fraction",size:"$0",note:"Yield setup"},
+    ],
+    domains:[
+      {name:"marginla.xyz",category:"Identity",mode:"Profile",health:96},
+      {name:"littleboner.xyz",category:"AI",mode:"Fractional",health:94},
+      {name:"yourboner.cyou",category:"Brand",mode:"Fractional",health:89},
+      {name:"bonerhub.bond",category:"Finance",mode:"Tracking",health:76},
+      {name:"f0mo.xyz",category:"Infra",mode:"Watching",health:82},
+    ],
+    timeline:[{d:"Mon",v:12000},{d:"Tue",v:19000},{d:"Wed",v:24000},{d:"Thu",v:21000},{d:"Fri",v:28000},{d:"Sat",v:34000},{d:"Sun",v:42000}],
+    tokenMix:[{name:"AI Domains",value:45},{name:".XYZ",value:25},{name:".COM",value:20},{name:"Meme Domains",value:10}],
+  },
+  {
+    id:"guest", wallet:"0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", displayName:"guest", domaName:"guest.doma",
+    bio:"Guest profile — connect a real wallet to see live data.",
+    location:"Unknown", region:"Global", discord:"@guest",
+    linkedin:"#", x:"#", github:"#", company:"#",
+    sectors:["Explorer"], languages:[], stats:{totalTokens:0,walletScore:12,holdings:0,domains:0,launches:0,buys:0,sells:0,value:"$0",txs:0},
+    identity:{verified:false,role:"Guest",level:"Low signal"},
+    holdings:[], trades:[], domains:[], timeline:[], tokenMix:[],
+  },
+];
+
+const NAV = [
+  {key:"overview",label:"📊 Overview"},
+  {key:"domains",label:"🌐 Domains"},
+  {key:"trades",label:"📈 Trades"},
+  {key:"tokens",label:"🪙 Tokens"},
+  {key:"media",label:"🎬 Media Studio"},
+  {key:"identity",label:"🛡️ Identity"},
+  {key:"features",label:"💡 Features"},
+  {key:"about",label:"👤 About"},
+];
+
+const COLORS = [P,"#6e96ff","#95b7ff","#00e5c3","#ff6b35"];
+
+function truncate(a){return a?`${a.slice(0,6)}...${a.slice(-4)}`:""}
+function normalize(v){return String(v||"").toLowerCase().replace(/[^a-z0-9.]+/g,"")}
+
+function toast(msg){
+  const el=document.getElementById("toast");
+  if(!el)return;
+  el.textContent=msg;
+  el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"),2200);
+}
+
+// ---- CANVAS BG PARTICLES ----
+function initCanvas(){
+  const canvas=document.getElementById("bg-canvas");
+  if(!canvas)return;
+  const ctx=canvas.getContext("2d");
+  let W,H,particles=[];
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+  resize();
+  window.addEventListener("resize",resize);
+  for(let i=0;i<55;i++){
+    particles.push({
+      x:Math.random()*1920,y:Math.random()*1080,
+      r:Math.random()*2.5+0.5,
+      dx:(Math.random()-0.5)*0.4,dy:(Math.random()-0.5)*0.4,
+      o:Math.random()*0.5+0.15
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(p=>{
+      p.x+=p.dx;p.y+=p.dy;
+      if(p.x<0||p.x>W)p.dx*=-1;
+      if(p.y<0||p.y>H)p.dy*=-1;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(75,118,249,${p.o})`;ctx.fill();
+    });
+    // subtle grid lines
+    ctx.strokeStyle="rgba(75,118,249,0.06)";ctx.lineWidth=1;
+    for(let x=0;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+    for(let y=0;y<H;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+setTimeout(initCanvas,100);
+
+// ---- COMPONENTS ----
+function AreaChart({data}){
+  const W=700,H=200,pL=40,pR=16,pT=16,pB=30;
+  if(!data||!data.length)return null;
+  const vals=data.map(d=>d.v);
+  const max=Math.max(...vals,1);
+  const uw=W-pL-pR,uh=H-pT-pB;
+  const x=(i)=>pL+(data.length===1?uw/2:(i*uw)/(data.length-1));
+  const y=(v)=>pT+(1-v/max)*uh;
+  const pts=data.map((d,i)=>[x(i),y(d.v)]);
+  const line=pts.map(([px,py],i)=>`${i===0?"M":"L"} ${px} ${py}`).join(" ");
+  const base=H-pB;
+  const area=`${line} L ${pts[pts.length-1][0]} ${base} L ${pts[0][0]} ${base} Z`;
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} className="sparkline-svg" style={{height:"100%",width:"100%"}}>
+      <defs>
+        <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={P} stopOpacity="0.28"/>
+          <stop offset="100%" stopColor={P} stopOpacity="0.01"/>
+        </linearGradient>
+      </defs>
+      {[0,0.25,0.5,0.75,1].map((t,i)=>{
+        const gy=pT+t*uh;
+        return <line key={i} x1={pL} x2={W-pR} y1={gy} y2={gy} stroke="#e8edff" strokeDasharray="3 3"/>;
+      })}
+      {data.map((d,i)=><text key={d.d} x={x(i)} y={H-6} fontSize="9" textAnchor="middle" fill="#8390a8">{d.d}</text>)}
+      <path d={area} fill="url(#ag)"/>
+      <path d={line} fill="none" stroke={P} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round"/>
+      {pts.map(([px,py],i)=><circle key={i} cx={px} cy={py} r="3.5" fill="white" stroke={P} strokeWidth="2"/>)}
+    </svg>
+  );
+}
+
+function PieChart({data}){
+  const [active,setActive]=useState(0);
+  if(!data||!data.length)return <div style={{textAlign:"center",color:"var(--muted)",padding:"40px 0"}}>No data</div>;
+  const total=data.reduce((s,d)=>s+d.value,0)||1;
+  const cx=120,cy=110,r=80;
+  let cur=-90;
+  const arcs=data.map((item,idx)=>{
+    const sweep=(item.value/total)*360;
+    const s=cur,e=cur+sweep; cur=e;
+    const toRad=a=>(Math.PI/180)*a;
+    const sx=cx+r*Math.cos(toRad(s)),sy=cy+r*Math.sin(toRad(s));
+    const ex=cx+r*Math.cos(toRad(e)),ey=cy+r*Math.sin(toRad(e));
+    const large=sweep>180?1:0;
+    return{...item,idx,path:`M ${cx} ${cy} L ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey} Z`};
+  });
+  const act=arcs[active]||arcs[0];
+  return(
+    <div>
+      <svg viewBox="0 0 240 220" style={{width:"100%",maxWidth:"240px",display:"block",margin:"0 auto"}}>
+        {arcs.map((a,i)=>(
+          <path key={i} d={a.path} fill={COLORS[i%COLORS.length]} opacity={i===active?1:0.75}
+            onMouseEnter={()=>setActive(i)} style={{cursor:"pointer",transition:"opacity 0.2s"}}/>
+        ))}
+        <circle cx={cx} cy={cy} r="40" fill="white"/>
+        <text x={cx} y={cy-3} fontSize="11" fontWeight="700" textAnchor="middle" fill="#0d1b3e">{act?.name}</text>
+        <text x={cx} y={cy+13} fontSize="10" textAnchor="middle" fill="#5a6a8a">{act?.value}%</text>
+      </svg>
+      <div style={{display:"flex",flexWrap:"wrap",gap:"6px",marginTop:"10px",justifyContent:"center"}}>
+        {data.map((d,i)=>(
+          <button key={d.name} onMouseEnter={()=>setActive(i)}
+            style={{display:"flex",alignItems:"center",gap:"6px",padding:"5px 11px",borderRadius:"50px",background:"white",border:"1.5px solid #e8edff",fontSize:"11px",fontWeight:"600",cursor:"pointer",color:"var(--text)"}}>
+            <span style={{width:"10px",height:"10px",borderRadius:"50%",background:COLORS[i%COLORS.length],display:"inline-block"}}/>
+            {d.name} · {d.value}%
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ---- AUDIO PLAYER ----
+function AudioPlayer({src}){
+  const audioRef=useRef(null);
+  const [playing,setPlaying]=useState(false);
+  const [progress,setProgress]=useState(0);
+  const [volume,setVolume]=useState(60);
+  const [title,setTitle]=useState("No audio loaded");
+
+  useEffect(()=>{
+    const a=audioRef.current;
+    if(!a)return;
+    a.volume=volume/100;
+    const upd=()=>setProgress(a.duration?a.currentTime/a.duration*100:0);
+    a.addEventListener("timeupdate",upd);
+    a.addEventListener("ended",()=>setPlaying(false));
+    return()=>{a.removeEventListener("timeupdate",upd)};
+  },[volume]);
+
+  useEffect(()=>{
+    const a=audioRef.current;
+    if(!a||!src)return;
+    a.src=src;
+    setTitle(src.split("/").pop()||"Audio");
+  },[src]);
+
+  function togglePlay(){
+    const a=audioRef.current;
+    if(!a)return;
+    if(playing){a.pause();setPlaying(false);}
+    else{const p=a.play();if(p&&p.catch)p.catch(()=>{});setPlaying(true);}
+  }
+  function seek(e){
+    const a=audioRef.current;
+    if(!a||!a.duration)return;
+    const rect=e.currentTarget.getBoundingClientRect();
+    const pct=(e.clientX-rect.left)/rect.width;
+    a.currentTime=pct*a.duration;
+  }
+
+  return(
+    <div className="audio-player">
+      <div className="audio-player-label">🎵 Audio Player</div>
+      <audio ref={audioRef} preload="metadata"/>
+      <div className="audio-controls">
+        <button className="audio-play-btn" onClick={togglePlay}>
+          {playing?"⏸":"▶"}
+        </button>
+        <div className="audio-info">
+          <div className="audio-title">{title}</div>
+          <div className="audio-sub">{src?"Ready to play":"Upload audio file to play"}</div>
+          <div className="audio-progress-wrap" onClick={seek}>
+            <div className="audio-progress" style={{width:`${progress}%`}}/>
+          </div>
+        </div>
+      </div>
+      <div className="volume-row">
+        <span style={{fontSize:"12px"}}>🔈</span>
+        <input type="range" min="0" max="100" value={volume} onChange={e=>{setVolume(+e.target.value);if(audioRef.current)audioRef.current.volume=+e.target.value/100;}}/>
+        <span className="volume-val">{volume}%</span>
+      </div>
+    </div>
+  );
+}
+
+// ---- MEDIA STUDIO ----
+function MediaStudio({onSetBg}){
+  const [activeTab,setActiveTab]=useState("image");
+  const [mediaFiles,setMediaFiles]=useState({image:[],video:[],audio:[]});
+  const [bgItem,setBgItem]=useState(null);
+  const [audioSrc,setAudioSrc]=useState(null);
+  const [drag,setDrag]=useState(false);
+  const fileRef=useRef();
+
+  function handleFiles(files){
+    const newMedia={image:[],video:[],audio:[]};
+    Array.from(files).forEach(f=>{
+      const url=URL.createObjectURL(f);
+      const item={url,name:f.name,size:f.size,type:f.type,file:f};
+      if(f.type.startsWith("image/"))newMedia.image.push(item);
+      else if(f.type.startsWith("video/"))newMedia.video.push(item);
+      else if(f.type.startsWith("audio/"))newMedia.audio.push(item);
+    });
+    setMediaFiles(prev=>({
+      image:[...prev.image,...newMedia.image],
+      video:[...prev.video,...newMedia.video],
+      audio:[...prev.audio,...newMedia.audio],
+    }));
+    if(newMedia.audio.length){setAudioSrc(newMedia.audio[0].url);}
+    toast(`✅ Đã tải ${Array.from(files).length} file lên`);
+  }
+
+  function onDrop(e){
+    e.preventDefault();setDrag(false);
+    handleFiles(e.dataTransfer.files);
+  }
+  function setAsBg(item){
+    setBgItem(item);
+    onSetBg(item);
+    toast(`🎨 Đã đặt làm nền: ${item.name}`);
+  }
+  function removeItem(type,url){
+    setMediaFiles(prev=>({...prev,[type]:prev[type].filter(i=>i.url!==url)}));
+    if(bgItem&&bgItem.url===url){setBgItem(null);onSetBg(null);}
+    toast("🗑️ Đã xóa file");
+  }
+
+  const currentFiles=mediaFiles[activeTab]||[];
+
+  return(
+    <div>
+      <div className="media-tabs">
+        {[{k:"image",l:"🖼️ Ảnh"},
+          {k:"video",l:"🎬 Video"},
+          {k:"audio",l:"🎵 Âm thanh"}].map(t=>(
+          <button key={t.k} className={`media-tab${activeTab===t.k?" active":""}`} onClick={()=>setActiveTab(t.k)}>{t.l}</button>
+        ))}
+      </div>
+
+      <div className={`upload-zone${drag?" drag":""}`}
+        onDragOver={e=>{e.preventDefault();setDrag(true)}}
+        onDragLeave={()=>setDrag(false)}
+        onDrop={onDrop}
+        onClick={()=>fileRef.current?.click()}>
+        <div className="upload-icon">{activeTab==="image"?"🖼️":activeTab==="video"?"🎬":"🎵"}</div>
+        <div className="upload-title">Kéo & thả hoặc click để tải lên</div>
+        <div className="upload-desc">
+          {activeTab==="image"&&"Hỗ trợ JPG, PNG, GIF, WebP · Tối đa 50MB"}
+          {activeTab==="video"&&"Hỗ trợ MP4, WebM, MOV · Tối đa 200MB"}
+          {activeTab==="audio"&&"Hỗ trợ MP3, WAV, OGG · Tối đa 50MB"}
+        </div>
+        <div className="upload-hint">
+          {activeTab==="image"&&"Đặt làm nền trang web"}
+          {activeTab==="video"&&"Phát video nền động"}
+          {activeTab==="audio"&&"Nhạc nền ambient"}
+        </div>
+        <input ref={fileRef} type="file" multiple style={{display:"none"}}
+          accept={activeTab==="image"?"image/*":activeTab==="video"?"video/*":"audio/*"}
+          onChange={e=>handleFiles(e.target.files)}/>
+      </div>
+
+      {currentFiles.length>0&&(
+        <>
+          {activeTab==="video"&&currentFiles[0]&&(
+            <div style={{marginTop:"16px"}}>
+              <div className="preview-panel">
+                <video src={currentFiles[0].url} controls style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+              </div>
+              <div className="preview-controls">
+                <span className="preview-label">Preview: {currentFiles[0].name}</span>
+                <button className="btn btn-primary" onClick={()=>setAsBg(currentFiles[0])}>🎬 Đặt làm nền</button>
+              </div>
+            </div>
+          )}
+          {activeTab==="audio"&&(
+            <div style={{marginTop:"16px"}}>
+              <AudioPlayer src={audioSrc}/>
+            </div>
+          )}
+          <div className="media-grid">
+            {currentFiles.map((item)=>(
+              <div key={item.url} className="media-item">
+                {activeTab==="image"&&<img src={item.url} alt={item.name}/>}
+                {activeTab==="video"&&<video src={item.url} muted/>}
+                {activeTab==="audio"&&(
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100%",fontSize:"32px",background:"linear-gradient(135deg,#4b76f9,#00e5c3)"}}>🎵</div>
+                )}
+                {bgItem&&bgItem.url===item.url&&<div className="set-bg-badge">✓ Đang dùng</div>}
+                <div className="media-item-overlay">
+                  {(activeTab==="image"||activeTab==="video")&&(
+                    <button className="media-btn-small" onClick={()=>setAsBg(item)}>🖼 Đặt nền</button>
+                  )}
+                  {activeTab==="audio"&&(
+                    <button className="media-btn-small" onClick={()=>setAudioSrc(item.url)}>▶ Phát</button>
+                  )}
+                  <button className="media-btn-small" onClick={()=>removeItem(activeTab,item.url)}>🗑</button>
+                </div>
+                <div className="media-item-label">{item.name}</div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+      {currentFiles.length===0&&(
+        <div style={{textAlign:"center",padding:"24px 0",color:"var(--muted)",fontSize:"13px"}}>
+          Chưa có file nào · Tải lên để xem ngay
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---- FEATURES PANEL ----
+const FEATURES=[
+  {icon:"🏷️",title:"Domain Drop Alerts",desc:"Nhận thông báo realtime khi domain giá trị sắp hết hạn hoặc rơi vào vùng deal. Filter theo TLD, giá, lịch sử traffic.",badge:"hot",badgeType:"hot"},
+  {icon:"🤖",title:"AI Domain Valuation",desc:"Model AI định giá domain dựa trên độ ngắn, TLD, từ khóa trending, lịch sử bán và tín hiệu thị trường Web3.",badge:"new",badgeType:"new"},
+  {icon:"⚡",title:"1-Click Domain Fractionalization",desc:"Chia nhỏ domain premium thành nhiều fraction, bán thanh khoản cho cộng đồng. Hệ thống escrow onchain tự động.",badge:"soon",badgeType:"soon"},
+  {icon:"📊",title:"Portfolio Heatmap",desc:"Bản đồ nhiệt trực quan hóa toàn bộ portfolio domain & token, hiển thị performance, risk score và correlation.",badge:"new",badgeType:"new"},
+  {icon:"🌐",title:"Domain Marketplace",desc:"Giao diện mua bán domain trực tiếp trong dashboard. Tích hợp với Namecheap, GoDaddy và Unstoppable Domains API.",badge:"soon",badgeType:"soon"},
+  {icon:"🔗",title:"Multi-Chain Identity",desc:"Một identity duy nhất cho Ethereum, Solana, Polkadot. Verify và liên kết tất cả wallet vào profile DOMA duy nhất.",badge:"new",badgeType:"new"},
+  {icon:"📈",title:"Domain ROI Calculator",desc:"Nhập giá mua, giá thị trường hiện tại, chi phí renew → tính ROI, break-even point và so sánh với chuẩn ngành.",badge:"hot",badgeType:"hot"},
+  {icon:"🎯",title:"Sniper Bot Integration",desc:"Kết nối sniper bot để tự động mua domain theo quy tắc định sẵn. Hỗ trợ cả TLD mới launch và expired domains.",badge:"soon",badgeType:"soon"},
+];
+
+// ---- MAIN APP ----
+function App(){
+  const [wallet,setWallet]=useState(DEMO_WALLET);
+  const [query,setQuery]=useState(DEMO_WALLET);
+  const [tab,setTab]=useState("overview");
+  const [recent,setRecent]=useState([]);
+  const [copied,setCopied]=useState(false);
+  const [bgMedia,setBgMedia]=useState(null);
+  const [showWalletModal,setShowWalletModal]=useState(false);
+  const [customWalletInput,setCustomWalletInput]=useState("");
+
+  // resolve profile
+  function lookupProfile(raw){
+    const q=normalize(raw.trim());
+    if(!q)return PROFILES[0];
+    let best=PROFILES[0];let bestScore=-1;
+    for(const p of PROFILES){
+      const fields=[p.wallet,p.displayName,p.domaName,p.bio,p.location,p.linkedin,p.x,p.github,p.company,p.discord];
+      for(const f of fields){
+        if(normalize(f||"").includes(q)){
+          const sc=f===p.wallet?100:f===p.domaName?95:f===p.displayName?90:60;
+          if(sc>bestScore){bestScore=sc;best=p;}
+        }
+      }
+      for(const d of (p.domains||[])){if(normalize(d.name).includes(q)&&80>bestScore){bestScore=80;best=p;}}
+    }
+    return best;
+  }
+  const profile=useMemo(()=>lookupProfile(wallet),[wallet]);
+
+  function onSearch(){
+    const p=lookupProfile(query);
+    setWallet(p.wallet);
+    setTab("overview");
+    setRecent(prev=>[query.trim(),...prev.filter(x=>x!==query.trim())].filter(Boolean).slice(0,6));
+    toast(`🔍 Tìm thấy: ${p.displayName}`);
+  }
+
+  async function copyAddr(){
+    try{await navigator.clipboard.writeText(wallet);setCopied(true);setTimeout(()=>setCopied(false),1400);toast("📋 Đã copy địa chỉ!");}
+    catch{toast("⚠️ Không thể copy trong trình duyệt này");}
+  }
+
+  function handleSetBg(item){
+    setBgMedia(item);
+    const vidEl=document.getElementById("bg-video");
+    const imgEl=document.getElementById("bg-image");
+    if(!item){if(vidEl)vidEl.style.display="none";if(imgEl)imgEl.style.display="none";return;}
+    if(item.type.startsWith("video/")){
+      if(vidEl){vidEl.src=item.url;vidEl.style.display="block";}
+      if(imgEl)imgEl.style.display="none";
+    }else if(item.type.startsWith("image/")){
+      if(imgEl){imgEl.src=item.url;imgEl.style.display="block";}
+      if(vidEl)vidEl.style.display="none";
+    }
+  }
+
+  function connectWallet(){
+    if(!customWalletInput.trim()){toast("⚠️ Nhập địa chỉ wallet");return;}
+    setWallet(customWalletInput.trim());
+    setShowWalletModal(false);
+    setCustomWalletInput("");
+    toast("✅ Đã kết nối wallet!");
+  }
+
+  const timeline=profile.timeline&&profile.timeline.length?profile.timeline:[
+    {d:"Mon",v:3200},{d:"Tue",v:5100},{d:"Wed",v:4800},{d:"Thu",v:6200},{d:"Fri",v:7500},{d:"Sat",v:6900},{d:"Sun",v:8400}
+  ];
+  const tokenMix=profile.tokenMix&&profile.tokenMix.length?profile.tokenMix:[
+    {name:"Domains",value:50},{name:"Tokens",value:30},{name:"NFTs",value:20}
+  ];
+
+  return(
+    <div>
+      {/* WALLET MODAL */}
+      {showWalletModal&&(
+        <div className="modal-overlay" onClick={e=>{if(e.target===e.currentTarget)setShowWalletModal(false)}}>
+          <div className="modal">
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"20px"}}>
+              <div className="modal-title">🔗 Kết nối Wallet</div>
+              <button className="modal-close" onClick={()=>setShowWalletModal(false)}>✕</button>
+            </div>
+            <p style={{fontSize:"13px",color:"var(--muted)",marginBottom:"16px",lineHeight:"1.6"}}>Nhập địa chỉ wallet của bạn để xem thông tin profile, domains và lịch sử giao dịch.</p>
+            <input value={customWalletInput} onChange={e=>setCustomWalletInput(e.target.value)}
+              onKeyDown={e=>{if(e.key==="Enter")connectWallet()}}
+              style={{width:"100%",padding:"12px 16px",borderRadius:"12px",border:"1.5px solid var(--border)",fontSize:"14px",fontFamily:"var(--font-mono)",outline:"none",background:"#f0f4ff",marginBottom:"16px"}}
+              placeholder="0x... hoặc ENS name"/>
+            <div style={{display:"flex",gap:"10px"}}>
+              <button className="btn btn-primary" onClick={connectWallet} style={{flex:1}}>✅ Kết nối</button>
+              <button className="btn btn-ghost" onClick={()=>{setWallet(DEMO_WALLET);setShowWalletModal(false);toast("🔄 Đã reset về demo")}}>Reset Demo</button>
+            </div>
+            <div style={{marginTop:"16px",background:"#f0f4ff",borderRadius:"12px",padding:"12px",fontSize:"12px",color:"var(--muted)"}}>
+              <strong>Demo wallets:</strong><br/>
+              <code style={{fontSize:"11px",display:"block",marginTop:"4px",wordBreak:"break-all"}}>{DEMO_WALLET}</code>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* HEADER */}
+      <header>
+        <div className="wrap">
+          <div className="header-inner">
+            <div className="logo-box">
+              <div className="logo-badge">🌐</div>
+              <div>
+                <div className="logo-title">DOMA Identity</div>
+                <div className="logo-sub">DomainFi Dashboard · Web3 Identity Layer</div>
+              </div>
+            </div>
+            <div className="header-actions">
+              <div style={{display:"flex",alignItems:"center",gap:"6px",padding:"7px 14px",borderRadius:"50px",background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.2)",fontSize:"12px",fontWeight:"600",color:"#15803d"}}>
+                <div className="live-dot"/>Live
+              </div>
+              <button className="btn btn-ghost" onClick={copyAddr}>
+                {copied?"✅ Copied":"📋 Copy Wallet"}
+              </button>
+              <button className="btn btn-primary" onClick={()=>setShowWalletModal(true)}>
+                🔗 Connect Wallet
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="wrap" style={{paddingBottom:"48px"}}>
+
+        {/* HERO */}
+        <div className="hero">
+          <div>
+            <div className="hero-badge">
+              <span className="live-dot"/>
+              DomainFi · Identity Finance · Web3
+            </div>
+            <h1 className="hero-h1">
+              Your <span className="accent">Domain</span> is<br/>Your Identity
+            </h1>
+            <p className="hero-desc">
+              Dashboard phân tích wallet, domain và tokenized assets theo chuẩn DomainFi. Track portfolio, verify identity và showcase your Web3 presence.
+            </p>
+            <div className="hero-btns">
+              <button className="btn btn-primary" onClick={()=>setShowWalletModal(true)}>🔗 Connect Wallet</button>
+              <button className="btn btn-accent" onClick={()=>setTab("media")}>🎬 Media Studio</button>
+              <button className="btn btn-ghost" onClick={()=>setTab("features")}>💡 Tính năng mới</button>
+            </div>
+            <div className="hero-stats">
+              <div className="stat-mini"><div className="stat-mini-val">{profile.stats.domains}</div><div className="stat-mini-label">Domains</div></div>
+              <div className="stat-mini"><div className="stat-mini-val">{profile.stats.walletScore}</div><div className="stat-mini-label">Score</div></div>
+              <div className="stat-mini"><div className="stat-mini-val">{profile.stats.value}</div><div className="stat-mini-label">Value</div></div>
+            </div>
+          </div>
+
+          <div className="profile-card">
+            <div className="profile-avatar-wrap">
+              <div className="profile-avatar">
+                <span style={{fontSize:"40px",position:"relative",zIndex:1}}>🐸</span>
+              </div>
+              {profile.identity.verified&&<div className="verified-badge">✓</div>}
+            </div>
+            <div className="profile-name">{profile.displayName}</div>
+            <div className="profile-handle">{profile.domaName} · {truncate(profile.wallet)}</div>
+            <div className="profile-bio">{profile.bio}</div>
+            <div className="tags">
+              {profile.sectors.map(s=><span key={s} className="tag">{s}</span>)}
+              <span className="tag" style={{background:"rgba(0,229,195,0.1)",borderColor:"rgba(0,229,195,0.3)",color:"#0a7c6e"}}>{profile.identity.role}</span>
+            </div>
+            <div className="score-bar-wrap">
+              <div className="score-label"><span>Wallet Score</span><span style={{color:"var(--p)",fontFamily:"var(--font-head)"}}>{profile.stats.walletScore}/100</span></div>
+              <div className="score-track"><div className="score-fill" style={{width:`${profile.stats.walletScore}%`}}/></div>
+            </div>
+            <div className="social-links">
+              <a href={profile.x} target="_blank" rel="noreferrer" className="social-link">🐦 X</a>
+              <a href={profile.linkedin} target="_blank" rel="noreferrer" className="social-link">💼 LinkedIn</a>
+              <a href={profile.github} target="_blank" rel="noreferrer" className="social-link">🐙 GitHub</a>
+              <a href={profile.company} target="_blank" rel="noreferrer" className="social-link">🌐 Web</a>
+            </div>
+          </div>
+        </div>
+
+        {/* SEARCH */}
+        <div className="search-section">
+          <div style={{fontSize:"13px",fontWeight:"700",color:"var(--muted)",textTransform:"uppercase",letterSpacing:"0.14em",marginBottom:"12px"}}>🔍 Wallet Lookup</div>
+          <div className="search-row">
+            <div className="search-input-wrap">
+              <span style={{color:"var(--muted)",fontSize:"16px"}}>🔍</span>
+              <input value={query} onChange={e=>setQuery(e.target.value)}
+                onKeyDown={e=>{if(e.key==="Enter")onSearch()}}
+                placeholder="Nhập wallet 0x... / domain marginla.xyz / owner name / social handle"/>
+            </div>
+            <button className="btn btn-primary" onClick={onSearch}>Search</button>
+            <button className="btn btn-ghost" onClick={()=>{setWallet(DEMO_WALLET);setQuery(DEMO_WALLET);setTab("overview");}}>Reset</button>
+          </div>
+          {recent.length>0&&(
+            <div className="recent-tags">
+              <span style={{fontSize:"11px",fontWeight:"600",color:"var(--muted)"}}>Gần đây:</span>
+              {recent.map(r=>(
+                <span key={r} className="recent-tag" onClick={()=>{setQuery(r);setWallet(r);}}>
+                  {r.length>20?`${r.slice(0,8)}...`:r}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* STAT CARDS */}
+        <div className="grid-4 section">
+          {[
+            {icon:"🌐",label:"Domains Held",value:profile.stats.domains,delta:"Active portfolio"},
+            {icon:"💰",label:"Portfolio Value",value:profile.stats.value,delta:"+12.6% this week"},
+            {icon:"⚡",label:"Transactions",value:profile.stats.txs.toLocaleString(),delta:"+91 today"},
+            {icon:"🪙",label:"Tokenized Assets",value:profile.stats.totalTokens,delta:"Linked & tracked"},
+          ].map(s=>(
+            <div key={s.label} className="stat-card">
+              <div className="stat-icon">{s.icon}</div>
+              <div className="stat-label">{s.label}</div>
+              <div className="stat-value">{s.value}</div>
+              <div className="stat-delta">↑ {s.delta}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* NAV TABS */}
+        <div className="nav-tabs">
+          {NAV.map(n=>(
+            <button key={n.key} className={`nav-tab${tab===n.key?" active":""}`} onClick={()=>setTab(n.key)}>
+              {n.label}
+            </button>
+          ))}
+        </div>
+
+        {/* OVERVIEW */}
+        {tab==="overview"&&(
+          <div>
+            <div className="grid-2" style={{marginBottom:"24px"}}>
+              <div className="card">
+                <div className="section-head">
+                  <div><div className="section-sub">Analytics</div><div className="section-title">Trading Volume</div></div>
+                  <div className="section-badge">7 ngày qua</div>
+                </div>
+                <div className="chart-wrap"><AreaChart data={timeline}/></div>
+              </div>
+              <div className="card">
+                <div className="section-head">
+                  <div><div className="section-sub">Distribution</div><div className="section-title">Asset Mix</div></div>
+                  <div className="section-badge">Portfolio</div>
+                </div>
+                <PieChart data={tokenMix}/>
+              </div>
+            </div>
+
+            <div className="grid-3">
+              <div className="card">
+                <div className="section-sub">Performance</div>
+                <div className="section-title" style={{marginBottom:"16px"}}>Quick Metrics</div>
+                {[
+                  {l:"Total holdings",v:profile.stats.holdings},
+                  {l:"Launches",v:profile.stats.launches},
+                  {l:"Total buys",v:profile.stats.buys},
+                  {l:"Total sells",v:profile.stats.sells},
+                ].map(m=>(
+                  <div key={m.l} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid #f0f4ff"}}>
+                    <span style={{fontSize:"13px",color:"var(--muted)",fontWeight:"500"}}>{m.l}</span>
+                    <span style={{fontFamily:"var(--font-head)",fontSize:"20px",fontWeight:"800",color:"var(--text)"}}>{m.v}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="card">
+                <div className="section-sub">Identity</div>
+                <div className="section-title" style={{marginBottom:"16px"}}>Trust Signals</div>
+                {[
+                  ["Doma OG Candidate","✅"],
+                  ["Onchain Verified","✅"],
+                  ["Social Connected","✅"],
+                  ["DomainFi Active","✅"],
+                ].map(([l,s])=>(
+                  <div key={l} className="id-check">
+                    <div className="id-check-icon">{s}</div>
+                    <div className="id-check-text">
+                      <div className="id-check-title">{l}</div>
+                      <div className="id-check-sub">Verified · Active</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="card">
+                <div className="section-sub">Summary</div>
+                <div className="section-title" style={{marginBottom:"16px"}}>Live Stats</div>
+                {[
+                  {l:"Tokenized assets",v:profile.stats.totalTokens,c:"var(--p)"},
+                  {l:"Portfolio value",v:profile.stats.value,c:"#22c55e"},
+                  {l:"Wallet score",v:`${profile.stats.walletScore}/100`,c:"var(--warn)"},
+                  {l:"Identity level",v:profile.identity.level,c:"var(--muted)"},
+                ].map(s=>(
+                  <div key={s.l} style={{marginBottom:"12px"}}>
+                    <div style={{fontSize:"11px",fontWeight:"600",color:"var(--muted)",textTransform:"uppercase",letterSpacing:"0.12em"}}>{s.l}</div>
+                    <div style={{fontFamily:"var(--font-head)",fontSize:"22px",fontWeight:"800",color:s.c,marginTop:"3px"}}>{s.v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* DOMAINS */}
+        {tab==="domains"&&(
+          <div className="card">
+            <div className="section-head">
+              <div><div className="section-sub">Portfolio</div><div className="section-title">Domains Held</div></div>
+              <div className="section-badge">{(profile.domains||[]).length} domains</div>
+            </div>
+            {profile.domains&&profile.domains.length?(
+              <div style={{overflowX:"auto"}}>
+                <table className="domain-table">
+                  <thead>
+                    <tr>
+                      <th>Domain</th><th>Category</th><th>Mode</th><th>Health</th><th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {profile.domains.map(d=>(
+                      <tr key={d.name} className="domain-row">
+                        <td><span className="domain-name">{d.name}</span></td>
+                        <td style={{fontSize:"12px",color:"var(--muted)",fontWeight:"600"}}>{d.category}</td>
+                        <td><span className="status-pill status-frac">{d.mode}</span></td>
+                        <td>
+                          <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
+                            <div className="health-bar"><div className="health-fill" style={{width:`${d.health}%`}}/></div>
+                            <span style={{fontSize:"12px",fontWeight:"700",color:"var(--text)"}}>{d.health}%</span>
+                          </div>
+                        </td>
+                        <td>
+                          <span className={`status-pill ${d.health>90?"status-owned":d.health>80?"status-frac":"status-watch"}`}>
+                            {d.health>90?"Premium":d.health>80?"Active":"Watch"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ):(
+              <div style={{textAlign:"center",padding:"40px",color:"var(--muted)"}}>
+                <div style={{fontSize:"40px",marginBottom:"12px"}}>🌐</div>
+                <div style={{fontWeight:"700"}}>Không có domain</div>
+                <div style={{fontSize:"13px",marginTop:"6px"}}>Connect wallet để xem domains của bạn</div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TRADES */}
+        {tab==="trades"&&(
+          <div className="card">
+            <div className="section-head">
+              <div><div className="section-sub">Market Actions</div><div className="section-title">Buy / Sell History</div></div>
+              <div className="section-badge">{(profile.trades||[]).length} transactions</div>
+            </div>
+            {profile.trades&&profile.trades.length?
+              profile.trades.map(t=>(
+                <div key={t.time+t.item} className="trade-card">
+                  <div className={`trade-icon ${t.action==="Bought"||t.action==="Staked"?"trade-buy":"trade-sell"}`}>
+                    {t.action==="Bought"?"📈":t.action==="Sold"?"📉":t.action==="Staked"?"🔒":"📋"}
+                  </div>
+                  <div className="trade-info">
+                    <div className="trade-action">{t.action} <span style={{color:"var(--p)"}}>{t.item}</span></div>
+                    <div className="trade-note">{t.note}</div>
+                    <div className="trade-time">⏱ {t.time}</div>
+                  </div>
+                  <div>
+                    <div className="trade-size">{t.size||"—"}</div>
+                    <div style={{fontSize:"11px",fontWeight:"600",color:t.action==="Bought"||t.action==="Staked"?"#22c55e":"#ef4444",textTransform:"uppercase",marginTop:"3px"}}>{t.action}</div>
+                  </div>
+                </div>
+              ))
+              :<div style={{textAlign:"center",padding:"40px",color:"var(--muted)"}}>
+                <div style={{fontSize:"40px",marginBottom:"12px"}}>📊</div>
+                <div style={{fontWeight:"700"}}>Không có lịch sử giao dịch</div>
+              </div>
+            }
+          </div>
+        )}
+
+        {/* TOKENS */}
+        {tab==="tokens"&&(
+          <div className="card">
+            <div className="section-head">
+              <div><div className="section-sub">Asset Ledger</div><div className="section-title">Tokenized Assets</div></div>
+              <div className="section-badge">{(profile.holdings||[]).length} assets</div>
+            </div>
+            {profile.holdings&&profile.holdings.length?
+              profile.holdings.map(h=>(
+                <div key={h.asset} className="holding-card">
+                  <div>
+                    <div style={{fontWeight:"700",color:"var(--text)",fontSize:"14px"}}>{h.asset}</div>
+                    <div style={{fontSize:"11px",fontWeight:"600",color:"var(--muted)",textTransform:"uppercase",marginTop:"3px"}}>{h.type}</div>
+                  </div>
+                  <div style={{fontSize:"13px",fontWeight:"600",color:"var(--muted)"}}>{h.amount}</div>
+                  <div style={{fontFamily:"var(--font-head)",fontSize:"16px",fontWeight:"800",color:"var(--text)"}}>{h.value}</div>
+                  <div><span className={`status-pill ${h.status==="Owned"?"status-owned":h.status==="Fractional"?"status-frac":"status-watch"}`}>{h.status}</span></div>
+                </div>
+              ))
+              :<div style={{textAlign:"center",padding:"40px",color:"var(--muted)"}}>
+                <div style={{fontSize:"40px",marginBottom:"12px"}}>🪙</div>
+                <div style={{fontWeight:"700"}}>Không có tokenized assets</div>
+              </div>
+            }
+          </div>
+        )}
+
+        {/* MEDIA STUDIO */}
+        {tab==="media"&&(
+          <div>
+            <div className="section-head">
+              <div><div className="section-sub">Studio</div><div className="section-title">🎬 Media Studio</div></div>
+              <div className="section-badge">Upload · Preview · Set Background</div>
+            </div>
+            <div style={{background:"rgba(75,118,249,0.05)",borderRadius:"20px",padding:"20px",border:"1.5px solid var(--border)",marginBottom:"24px",fontSize:"13px",color:"var(--muted)",lineHeight:"1.7"}}>
+              📌 <strong style={{color:"var(--text)"}}>Hướng dẫn:</strong> Tải lên ảnh hoặc video để đặt làm nền trang web ngay lập tức. Upload nhạc MP3 để phát ambient trong nền. Tất cả media được xem trực tiếp — không cần upload server.
+            </div>
+            <div className="card">
+              <MediaStudio onSetBg={handleSetBg}/>
+            </div>
+            {bgMedia&&(
+              <div className="card" style={{marginTop:"16px",display:"flex",alignItems:"center",gap:"14px",background:"rgba(0,229,195,0.06)",borderColor:"rgba(0,229,195,0.3)"}}>
+                <span style={{fontSize:"24px"}}>✅</span>
+                <div>
+                  <div style={{fontWeight:"700",color:"var(--text)"}}>Đang dùng làm nền: <span style={{color:"var(--p)"}}>{bgMedia.name}</span></div>
+                  <div style={{fontSize:"12px",color:"var(--muted)",marginTop:"3px"}}>{bgMedia.type} · {(bgMedia.size/1024/1024).toFixed(1)} MB</div>
+                </div>
+                <button className="btn btn-ghost" style={{marginLeft:"auto"}} onClick={()=>{handleSetBg(null);setBgMedia(null);}}>✕ Xóa nền</button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* IDENTITY */}
+        {tab==="identity"&&(
+          <div className="grid-2">
+            <div className="card">
+              <div className="section-sub">Verification</div>
+              <div className="section-title" style={{marginBottom:"20px"}}>Identity Trust Layer</div>
+              {[
+                {icon:"🏆",t:"Doma OG Candidate",s:"Verified early supporter của Doma ecosystem",ok:profile.identity.verified},
+                {icon:"⛓️",t:"Onchain Wallet Verified",s:"Địa chỉ ví đã được verify qua signature",ok:true},
+                {icon:"🔗",t:"Social Profiles Linked",s:"X, LinkedIn, GitHub đã được liên kết",ok:true},
+                {icon:"📊",t:"DomainFi Researcher",s:"Đã tham gia ít nhất 3 domain research reports",ok:true},
+                {icon:"💎",t:"Premium Holder",s:"Nắm giữ domain giá trị > $5,000",ok:profile.stats.domains>3},
+              ].map(({icon,t,s,ok})=>(
+                <div key={t} className="id-check">
+                  <div className="id-check-icon">{icon}</div>
+                  <div className="id-check-text">
+                    <div className="id-check-title">{t}</div>
+                    <div className="id-check-sub">{s}</div>
+                  </div>
+                  <span className={`status-pill ${ok?"status-owned":"status-watch"}`}>{ok?"✓ OK":"Pending"}</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div className="card" style={{marginBottom:"16px"}}>
+                <div className="section-sub">Score Breakdown</div>
+                <div className="section-title" style={{marginBottom:"16px"}}>Wallet Score</div>
+                {[
+                  {l:"Domain Quality",v:92,c:"var(--p)"},
+                  {l:"Transaction Volume",v:88,c:"#22c55e"},
+                  {l:"Identity Completeness",v:95,c:"var(--accent)"},
+                  {l:"Community Engagement",v:78,c:"var(--warn)"},
+                ].map(s=>(
+                  <div key={s.l} style={{marginBottom:"14px"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",fontSize:"12px",fontWeight:"600",marginBottom:"5px"}}>
+                      <span style={{color:"var(--muted)"}}>{s.l}</span>
+                      <span style={{color:s.c,fontFamily:"var(--font-head)"}}>{s.v}</span>
+                    </div>
+                    <div className="score-track"><div className="score-fill" style={{width:`${s.v}%`,background:s.c}}/></div>
+                  </div>
+                ))}
+              </div>
+              <div className="card" style={{background:"linear-gradient(135deg,var(--p),#6e96ff)",border:"none"}}>
+                <div style={{color:"rgba(255,255,255,0.7)",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.14em"}}>Identity Level</div>
+                <div style={{fontFamily:"var(--font-head)",fontSize:"32px",fontWeight:"800",color:"white",margin:"8px 0"}}>{profile.identity.level}</div>
+                <div style={{color:"rgba(255,255,255,0.8)",fontSize:"13px"}}>{profile.identity.role}</div>
+                <div style={{marginTop:"16px",background:"rgba(255,255,255,0.15)",borderRadius:"12px",padding:"10px 14px",fontSize:"12px",color:"white"}}>
+                  🏅 Top 5% wallets in DomainFi ecosystem
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FEATURES */}
+        {tab==="features"&&(
+          <div>
+            <div className="section-head">
+              <div><div className="section-sub">Roadmap</div><div className="section-title">💡 Tính năng đang phát triển</div></div>
+              <div className="section-badge">Community Requested</div>
+            </div>
+            <div style={{background:"linear-gradient(135deg,rgba(75,118,249,0.08),rgba(0,229,195,0.05))",border:"1.5px solid var(--border)",borderRadius:"20px",padding:"20px",marginBottom:"24px",fontSize:"13px",lineHeight:"1.7",color:"var(--muted)"}}>
+              🚀 <strong style={{color:"var(--text)"}}>Muốn tính năng nào được ưu tiên?</strong> Vote hoặc đề xuất tính năng mới trong Discord @marginla. Những tính năng hot nhất sẽ được build trong sprint tiếp theo.
+            </div>
+            <div className="tips-grid">
+              {FEATURES.map(f=>(
+                <div key={f.title} className="tip-card">
+                  <div className="tip-icon">{f.icon}</div>
+                  <div className="tip-title">{f.title}</div>
+                  <div className="tip-desc">{f.desc}</div>
+                  <span className={`tip-badge ${f.badgeType}`}>{f.badge==="hot"?"🔥 Hot":f.badge==="new"?"✨ New":"🔜 Soon"}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ABOUT */}
+        {tab==="about"&&(
+          <div className="grid-2">
+            <div className="card">
+              <div className="section-sub">Profile</div>
+              <div className="section-title" style={{marginBottom:"20px"}}>About this Wallet</div>
+              {[
+                {icon:"📝",t:"Bio",v:profile.bio},
+                {icon:"📍",t:"Location",v:profile.location},
+                {icon:"🌏",t:"Region",v:profile.region},
+                {icon:"💬",t:"Discord",v:profile.discord},
+              ].map(({icon,t,v})=>(
+                <div key={t} style={{background:"#f8f9ff",borderRadius:"14px",padding:"14px",marginBottom:"10px",border:"1px solid var(--border)"}}>
+                  <div style={{fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.12em",color:"var(--muted)",marginBottom:"6px"}}>{icon} {t}</div>
+                  <div style={{fontSize:"13px",lineHeight:"1.65",color:"var(--text)",fontWeight:"500"}}>{v}</div>
+                </div>
+              ))}
+              <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginTop:"8px"}}>
+                {profile.sectors.map(s=><span key={s} className="tag">{s}</span>)}
+              </div>
+            </div>
+            <div>
+              <div className="card" style={{marginBottom:"16px"}}>
+                <div className="section-sub">Links</div>
+                <div className="section-title" style={{marginBottom:"16px"}}>Social Profiles</div>
+                <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+                  {[
+                    {icon:"🐦",l:"X / Twitter",h:profile.x},
+                    {icon:"💼",l:"LinkedIn",h:profile.linkedin},
+                    {icon:"🐙",l:"GitHub",h:profile.github},
+                    {icon:"🌐",l:"Company / Website",h:profile.company},
+                  ].map(({icon,l,h})=>(
+                    <a key={l} href={h} target="_blank" rel="noreferrer"
+                      style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 16px",borderRadius:"14px",background:"#f8f9ff",border:"1px solid var(--border)",textDecoration:"none",color:"var(--text)",fontSize:"13px",fontWeight:"600",transition:"all 0.2s"}}
+                      onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--p)";e.currentTarget.style.color="var(--p)"}}
+                      onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text)"}}>
+                      <span>{icon} {l}</span><span>↗</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <div className="card" style={{background:"linear-gradient(135deg,#0d1b3e,#1a3370)"}}>
+                <div style={{color:"rgba(255,255,255,0.55)",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.14em",marginBottom:"8px"}}>Languages</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
+                  {(profile.languages||[]).map(l=>(
+                    <span key={l} style={{padding:"6px 14px",borderRadius:"50px",background:"rgba(75,118,249,0.25)",border:"1px solid rgba(75,118,249,0.4)",fontSize:"12px",fontWeight:"600",color:"#6e96ff"}}>{l}</span>
+                  ))}
+                </div>
+                <div style={{marginTop:"20px",borderTop:"1px solid rgba(255,255,255,0.1)",paddingTop:"16px"}}>
+                  <div style={{color:"rgba(255,255,255,0.55)",fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.14em",marginBottom:"8px"}}>Interests</div>
+                  <div style={{fontSize:"13px",color:"rgba(255,255,255,0.75)",lineHeight:"1.6"}}>
+                    Market narratives · Domain branding · Community engagement · Emerging tech · DeFi protocols · NFT ecosystems
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </main>
+
+      <footer>
+        <div className="wrap">
+          <div className="footer-inner">
+            <div className="logo-title" style={{fontSize:"22px"}}>🌐 DOMA Identity</div>
+            <div className="footer-text">DomainFi Analytics · Web3 Identity Layer · Built for domain holders and crypto communities</div>
+            <div className="footer-links">
+              <a href={profile.x} target="_blank" rel="noreferrer">X / Twitter</a>
+              <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+              <a href={profile.github} target="_blank" rel="noreferrer">GitHub</a>
+              <a href={profile.company} target="_blank" rel="noreferrer">marginla.xyz</a>
+            </div>
+            <div style={{fontSize:"11px",color:"var(--muted)",marginTop:"8px"}}>Replace demo arrays with real onchain API data to go live · Connect Doma, wallet indexers, or subgraphs</div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
